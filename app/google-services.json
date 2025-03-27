@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "145447109825",
+    "project_id": "proyectoap2",
+    "storage_bucket": "proyectoap2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:145447109825:android:becf8210fe43acd1140040",
+        "android_client_info": {
+          "package_name": "edu.ucne.proyectofinal_ap2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "145447109825-dc963gp2lilgokhbuj5mq1hct9oudnem.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9L7uG_5XfCNtZtgfMcjNoVF6L4dasFdg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "145447109825-dc963gp2lilgokhbuj5mq1hct9oudnem.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
