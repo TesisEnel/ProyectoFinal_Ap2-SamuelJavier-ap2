@@ -4,15 +4,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.runtime.*
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.layout.*
-import kotlinx.coroutines.launch
 import androidx.compose.ui.graphics.Color
+import edu.ucne.proyectofinal_ap2.R
+import edu.ucne.proyectofinal_ap2.data.entities.Letrero
+import edu.ucne.proyectofinal_ap2.data.entities.Material
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
@@ -22,10 +24,23 @@ fun HomeScreen(
     onCrearPedido: () -> Unit,
     onCerrarSesion: () -> Unit,
     onPerfilClick: () -> Unit,
-    onMisPedidosClick: () -> Unit
+    onMisPedidosClick: () -> Unit,
+    onIrAPersonalizar: (Int) -> Unit,
+    onMaterialClick: (Material) -> Unit,
+    onOpcionesLetrero: () -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+
+    val letrerosDisponibles = listOf(
+        Letrero(1, "Letrero Luminoso", R.drawable.letrero1),
+        Letrero(2, "Letrero de Acrílico", R.drawable.letrero1)
+    )
+    val materialesDisponibles = listOf(
+        Material(1, "Vinilo", "Material resistente al agua", R.drawable.letrero1),
+        Material(2, "Acrílico", "Ideal para letreros luminosos", R.drawable.letrero1)
+    )
 
     ModalDrawer(
         drawerState = drawerState,
@@ -86,7 +101,7 @@ fun HomeScreen(
                 modifier = Modifier
                     .padding(padding)
                     .fillMaxSize()
-                    .padding(24.dp),
+                    .padding(8.dp),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -94,30 +109,22 @@ fun HomeScreen(
                     text = "¡Bienvenido, $userName!",
                     fontSize = MaterialTheme.typography.h5.fontSize,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 32.dp)
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
 
-
                 if (isAdmin) {
-                    Text(
-                        text = "👑 Modo administrador activado",
-                        color = Color.Red,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                    AdminMenuScreen(
+                        onVerPedidosClick = onVerPedidos,
+                        onOpcionesLetrero= onOpcionesLetrero,
+                        onAgregarMaterialClick = {  }
                     )
-                    Button(
-                        onClick = onVerPedidos,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text("Ver pedidos")
-                    }
                 } else {
-                    Button(
-                        onClick = onCrearPedido,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text("Crear nuevo pedido")
-                    }
+                    HomeClienteCatalogo(
+                        letreros = letrerosDisponibles,
+                        materiales = materialesDisponibles,
+                        onLetreroClick = { letrero -> onIrAPersonalizar(letrero.id) },
+                        onMaterialClick = onMaterialClick
+                    )
                 }
             }
         }
