@@ -59,17 +59,20 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
     implementation("androidx.compose.material3:material3:1.1.0-alpha02")
     implementation ("androidx.compose.material:material:1.4.0")
+    implementation("androidx.compose.material:material:1.5.4")
     implementation("androidx.compose.material:material:1.3.1") // Usa la última versión
-
+    implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-auth")
-
+    implementation ("com.google.firebase:firebase-bom:32.7.3")
     // Firebase Auth
     implementation("com.google.firebase:firebase-auth-ktx:22.3.1")
     // Core de Firebase
     implementation("com.google.firebase:firebase-common-ktx:20.4.1")
     implementation("com.google.firebase:firebase-analytics-ktx:21.5.0")
     implementation("com.google.firebase:firebase-firestore-ktx:24.9.1")
+    implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
+
 
 
     //Hilt
@@ -83,6 +86,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
+    implementation(libs.firebase.storage.ktx)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
