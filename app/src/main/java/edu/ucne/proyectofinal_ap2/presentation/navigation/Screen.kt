@@ -15,4 +15,6 @@ sealed class Screen(val route: String) {
     object AdminMenuScreen : Screen("AdminMenuScreen")
     object AgregarLetreroScreen : Screen("AgregarLetreroScreen")
     object OpcionesLetreroScreen : Screen("OpcionesLetreroScreen")
+    object EditarLetreroScreen : Screen("EditarLetreroScreen ")
+    object EliminarLetreroScreen : Screen("EliminarLetreroScreen ")
 }

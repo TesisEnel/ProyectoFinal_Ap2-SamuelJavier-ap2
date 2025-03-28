@@ -35,6 +35,8 @@ import edu.ucne.proyectofinal_ap2.data.entities.Letrero
 import edu.ucne.proyectofinal_ap2.presentation.menu.AdminMenuScreen
 import edu.ucne.proyectofinal_ap2.presentation.menu.AgregarLetreroScreen
 import edu.ucne.proyectofinal_ap2.presentation.menu.DetalleLetreroScreen
+import edu.ucne.proyectofinal_ap2.presentation.menu.EditarLetreroScreen
+import edu.ucne.proyectofinal_ap2.presentation.menu.EliminarLetreroScreen
 import edu.ucne.proyectofinal_ap2.presentation.menu.LetreroViewModel
 import edu.ucne.proyectofinal_ap2.presentation.menu.OpcionesLetreroScreen
 
@@ -133,7 +135,17 @@ fun AppNavHost(navHostController: NavHostController) {
             AdminMenuScreen(
                 onVerPedidosClick = { navHostController.popBackStack() },
                 onOpcionesLetrero = { navHostController.navigate(Screen.OpcionesLetreroScreen.route)},
-                onAgregarMaterialClick = { navHostController.popBackStack() }
+                onAgregarMaterialClick = { navHostController.navigate(Screen.EliminarLetreroScreen.route)}
+
+            )
+        }
+        composable(Screen.EditarLetreroScreen.route) {
+            EditarLetreroScreen(
+
+            )
+        }
+        composable(Screen.EliminarLetreroScreen.route) {
+            EliminarLetreroScreen(
 
             )
         }
@@ -150,14 +162,10 @@ fun AppNavHost(navHostController: NavHostController) {
 
         composable(Screen.OpcionesLetreroScreen.route) {
             OpcionesLetreroScreen(
-               onEditarClick = {
-                   navHostController.popBackStack()
-               },
+                onEditarClick = { navHostController.navigate(Screen.EditarLetreroScreen.route)},
                 onAgregarClick = { navHostController.navigate(Screen.AgregarLetreroScreen.route)},
 
-                onEliminarClick = {
-                    navHostController.popBackStack()
-                }
+                onEliminarClick = { navHostController.navigate(Screen.EliminarLetreroScreen.route)}
             )
         }
 
