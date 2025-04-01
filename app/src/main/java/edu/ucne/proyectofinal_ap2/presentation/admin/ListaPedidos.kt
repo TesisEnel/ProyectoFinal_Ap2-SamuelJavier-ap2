@@ -14,7 +14,6 @@ import java.util.*
 fun ListaPedidosAdminScreen(
     pedidoViewModel: PedidoViewModel = hiltViewModel()
 ) {
-    // Asegurarse de cargar los pedidos al entrar a la pantalla
     LaunchedEffect(Unit) {
         pedidoViewModel.obtenerPedidos()
     }
@@ -25,7 +24,6 @@ fun ListaPedidosAdminScreen(
     val pedidosFiltrados = pedidos.filter { it.estado == estadoSeleccionado }
 
     Column(modifier = Modifier.padding(16.dp)) {
-        // Botones de filtro por estado
         Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
             listOf("pendiente", "aceptado", "rechazado").forEach { estado ->
                 Button(
@@ -60,13 +58,12 @@ fun ListaPedidosAdminScreen(
                         Text("Estado: ${pedido.estado}")
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // Datos del cliente
                         Text("Cliente:")
                         Text("- Nombre: ${pedido.nombre} ${pedido.apellido}")
                         Text("- Teléfono: ${pedido.telefono}")
                         Text("- Dirección: ${pedido.direccion}")
 
-                        // Fecha
+
                         pedido.fecha?.let {
                             val fecha = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(it))
                             Text("Fecha del pedido: $fecha")

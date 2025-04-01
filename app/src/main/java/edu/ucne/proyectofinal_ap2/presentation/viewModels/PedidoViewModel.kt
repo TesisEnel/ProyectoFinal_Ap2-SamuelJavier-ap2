@@ -49,38 +49,45 @@ class PedidoViewModel @Inject constructor() : ViewModel() {
     }
 
     fun guardarPedido(pedido: Pedido, onSuccess: () -> Unit, onError: (String) -> Unit) {
-        val db = FirebaseFirestore.getInstance()
-        val pedidosCollection = db.collection("pedidos")
+        val db = Firebase.firestore
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
 
-        val pedidoMap = mapOf(
-            "id" to pedido.id,
-            "material" to pedido.material,
-            "medida" to pedido.medida,
-            "alto" to pedido.alto,
-            "ancho" to pedido.ancho,
-            "logoUrl" to pedido.logoUrl,
-            "precio" to pedido.precio,
-            "estado" to pedido.estado,
-            "fecha" to System.currentTimeMillis(),
-            "nombre" to pedido.nombre,
-            "apellido" to pedido.apellido,
-            "telefono" to pedido.telefono,
-            "direccion" to pedido.direccion
-        )
+        if (userId == null) {
+            onError("Usuario no autenticado")
+            return
+        }
+        db.collection("users").document(userId)
+            .get()
+            .addOnSuccessListener { userDoc ->
+                val nombre = userDoc.getString("nombre") ?: ""
+                val apellido = userDoc.getString("apellido") ?: ""
+                val telefono = userDoc.getString("telefono") ?: ""
+                val direccion = userDoc.getString("direccion") ?: ""
 
-        pedidosCollection.document(pedido.id)
-            .set(pedidoMap)
-            .addOnSuccessListener {
-                onSuccess()
-
-                // 🔔 Aquí va la notificación al admin
-                enviarNotificacionAlAdmin(
-                    titulo = "Nuevo pedido",
-                    mensaje = "Un cliente ha realizado un nuevo pedido"
+                val pedidoMap = mapOf(
+                    "id" to pedido.id,
+                    "material" to pedido.material,
+                    "medida" to pedido.medida,
+                    "alto" to pedido.alto,
+                    "ancho" to pedido.ancho,
+                    "logoUrl" to pedido.logoUrl,
+                    "precio" to pedido.precio,
+                    "estado" to pedido.estado,
+                    "fecha" to System.currentTimeMillis(),
+                    "userId" to userId,
+                    "nombre" to nombre,
+                    "apellido" to apellido,
+                    "telefono" to telefono,
+                    "direccion" to direccion
                 )
+
+                db.collection("pedidos").document(pedido.id)
+                    .set(pedidoMap)
+                    .addOnSuccessListener { onSuccess() }
+                    .addOnFailureListener { e -> onError(e.message ?: "Error desconocido") }
             }
             .addOnFailureListener { e ->
-                onError(e.message ?: "Error desconocido")
+                onError("No se pudieron obtener los datos del usuario: ${e.message}")
             }
     }
 
@@ -104,8 +111,8 @@ class PedidoViewModel @Inject constructor() : ViewModel() {
                         estado = doc.getString("estado") ?: "pendiente",
                         nombre = doc.getString("nombre") ?: "",
                         apellido = doc.getString("apellido") ?: "",
-                        telefono = doc.getString("telefono") ?: "",
                         direccion = doc.getString("direccion") ?: "",
+                        telefono = doc.getString("telefono") ?: "",
                         fecha = doc.getLong("fecha")
                     )
                 } ?: emptyList()
@@ -113,45 +120,8 @@ class PedidoViewModel @Inject constructor() : ViewModel() {
                 _pedidos.value = lista
             }
     }
-    fun enviarNotificacionAlAdmin(titulo: String, mensaje: String) {
-        Firebase.firestore.collection("admin_tokens")
-            .get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    val token = document.getString("token")
-                    if (token != null) {
-                        val data = mapOf(
-                            "to" to token,
-                            "notification" to mapOf(
-                                "title" to titulo,
-                                "body" to mensaje
-                            )
-                        )
 
 
-                        val client = OkHttpClient()
-                        val json = Gson().toJson(data)
-                        val body = json.toRequestBody("application/json; charset=utf-8".toMediaType())
-                        val request = Request.Builder()
-                            .url("https://fcm.googleapis.com/fcm/send")// 🔁 Cambia por tu FCM Server Key
-                            .addHeader("Authorization", "key=AAAAbC123456:APA91b...")
-                            .addHeader("Content-Type", "application/json")
-                            .post(body)
-                            .build()
-
-                        client.newCall(request).enqueue(object : Callback {
-                            override fun onFailure(call: Call, e: IOException) {
-                                Log.e("Noti", "Error al enviar notificación", e)
-                            }
-
-                            override fun onResponse(call: Call, response: Response) {
-                                Log.d("Noti", "Notificación enviada: ${response.body?.string()}")
-                            }
-                        })
-                    }
-                }
-            }
-    }
 
     fun cambiarEstadoPedido(id: String, nuevoEstado: String) {
         Firebase.firestore.collection("pedidos").document(id)

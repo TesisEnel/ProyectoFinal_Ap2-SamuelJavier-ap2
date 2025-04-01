@@ -1,6 +1,7 @@
 package edu.ucne.proyectofinal_ap2.presentation.pedidos
 
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -163,7 +164,8 @@ fun CrearPedidoScreen(
 
         Spacer(Modifier.height(24.dp))
         Button(
-            onClick = {val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@Button
+            onClick = {
+                val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@Button
 
                 Firebase.firestore.collection("usuarios")
                     .document(userId)
@@ -173,6 +175,9 @@ fun CrearPedidoScreen(
                         val apellido = doc.getString("apellido") ?: ""
                         val direccion = doc.getString("direccion") ?: ""
                         val telefono = doc.getString("telefono") ?: ""
+
+
+                        Log.d("PedidoDebug", "Cliente: $nombre $apellido | $direccion | $telefono")
 
                         val pedido = Pedido(
                             id = UUID.randomUUID().toString(),
@@ -190,14 +195,19 @@ fun CrearPedidoScreen(
                             fecha = System.currentTimeMillis()
                         )
 
-                        pedidoViewModel.guardarPedido(pedido,
+                        pedidoViewModel.guardarPedido(
+                            pedido,
                             onSuccess = {
+                                Toast.makeText(context, "Pedido guardado con éxito", Toast.LENGTH_SHORT).show()
                                 navHostController.navigate(Screen.PagoInstruccionScreen.route)
                             },
                             onError = {
-                                Toast.makeText(context, "Error al guardar", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Error al guardar: $it", Toast.LENGTH_SHORT).show()
                             }
                         )
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(context, "Error al obtener datos del cliente", Toast.LENGTH_SHORT).show()
                     }
             },
             enabled = materialSeleccionado != null
