@@ -1,31 +1,27 @@
-package edu.ucne.proyectofinal_ap2.presentation.menu
+package edu.ucne.proyectofinal_ap2.presentation.viewModels
+
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.util.*
+import edu.ucne.proyectofinal_ap2.data.entities.Letrero
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class LetreroViewModel @Inject constructor() : ViewModel() {
 
     var isLoading by mutableStateOf(false)
+        private set
+
+    var letreros by mutableStateOf<List<Letrero>>(emptyList())
         private set
 
     fun agregarLetrero(
@@ -41,7 +37,6 @@ class LetreroViewModel @Inject constructor() : ViewModel() {
         val imageName = "letreros/${UUID.randomUUID()}.jpg"
         val storageRef = Firebase.storage.reference.child(imageName)
 
-        // 🔍 LOG
         Log.d("AgregarLetrero", "Subiendo imagen: $imagenUri → $imageName")
 
         storageRef.putFile(imagenUri)
@@ -58,6 +53,7 @@ class LetreroViewModel @Inject constructor() : ViewModel() {
                         .addOnSuccessListener {
                             isLoading = false
                             onSuccess()
+                            obtenerLetreros()
                         }
                         .addOnFailureListener {
                             isLoading = false
@@ -69,6 +65,22 @@ class LetreroViewModel @Inject constructor() : ViewModel() {
                 isLoading = false
                 Log.e("AgregarLetrero", "Error al subir imagen: ${it.message}")
                 onError("Error al subir imagen: ${it.message}")
+            }
+    }
+
+    fun obtenerLetreros() {
+        Firebase.firestore.collection("letreros")
+            .get()
+            .addOnSuccessListener { result ->
+                letreros = result.documents.mapNotNull { doc ->
+                    val nombre = doc.getString("nombre") ?: return@mapNotNull null
+                    val descripcion = doc.getString("descripcion") ?: ""
+                    val imagenUrl = doc.getString("imagenUrl") ?: ""
+                    Letrero(nombre = nombre, descripcion = descripcion, imagenUrl = imagenUrl)
+                }
+            }
+            .addOnFailureListener {
+                Log.e("LetreroViewModel", "Error al obtener letreros: ${it.message}")
             }
     }
 }
