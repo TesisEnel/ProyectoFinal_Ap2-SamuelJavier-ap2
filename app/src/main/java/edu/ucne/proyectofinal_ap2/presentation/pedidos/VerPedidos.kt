@@ -31,7 +31,7 @@ fun VerPedidosScreen(
             )
         }
     ) {
-        // Aquí solo muestras un mensaje placeholder
+
         Column(
             modifier = Modifier
                 .fillMaxSize()

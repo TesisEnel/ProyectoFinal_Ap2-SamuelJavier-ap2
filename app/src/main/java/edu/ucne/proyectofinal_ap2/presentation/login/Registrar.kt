@@ -2,6 +2,7 @@ package edu.ucne.proyectofinal_ap2.presentation.login
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,10 +16,21 @@ import androidx.compose.ui.text.style.TextAlign
 
 @Composable
 fun RegisterScreen(
-    onRegisterClick: (name: String, email: String, password: String, rol: String) -> Unit,
+    onRegisterClick: (
+        nombre: String,
+        apellido: String,
+        direccion: String,
+        telefono: String,
+        email: String,
+        password: String,
+        rol: String
+    ) -> Unit,
     onGoToLogin: () -> Unit
 ) {
-    var name by remember { mutableStateOf("") }
+    var nombre by remember { mutableStateOf("") }
+    var apellido by remember { mutableStateOf("") }
+    var direccion by remember { mutableStateOf("") }
+    var telefono by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
@@ -40,11 +52,42 @@ fun RegisterScreen(
         )
 
         OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
+            value = nombre,
+            onValueChange = { nombre = it },
             label = { Text("Nombre") },
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = apellido,
+            onValueChange = { apellido = it },
+            label = { Text("Apellido") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = direccion,
+            onValueChange = { direccion = it },
+            label = { Text("Dirección") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = telefono,
+            onValueChange = { telefono = it },
+            label = { Text("Teléfono") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone)
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -54,7 +97,8 @@ fun RegisterScreen(
             onValueChange = { email = it },
             label = { Text("Correo electrónico") },
             singleLine = true,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email)
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -65,8 +109,7 @@ fun RegisterScreen(
             label = { Text("Contraseña") },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -105,9 +148,7 @@ fun RegisterScreen(
         Button(
             onClick = {
                 if (password == confirmPassword) {
-                    onRegisterClick(name, email, password, rol)
-                } else {
-
+                    onRegisterClick(nombre, apellido, direccion, telefono, email, password, rol)
                 }
             },
             modifier = Modifier
