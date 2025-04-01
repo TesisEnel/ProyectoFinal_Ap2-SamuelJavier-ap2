@@ -1,44 +1,50 @@
 package edu.ucne.proyectofinal_ap2.presentation.navigation
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 
-import android.util.Log
 import android.widget.Toast
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import edu.ucne.proyectofinal_ap2.data.entities.Material
-import edu.ucne.proyectofinal_ap2.data.entities.Pedido
 import edu.ucne.proyectofinal_ap2.presentation.login.AuthViewModel
 import edu.ucne.proyectofinal_ap2.presentation.login.LoginScreen
 import edu.ucne.proyectofinal_ap2.presentation.login.RegisterScreen
 import edu.ucne.proyectofinal_ap2.presentation.menu.HomeScreen
-import edu.ucne.proyectofinal_ap2.presentation.menu.MaterialesScreen
-import edu.ucne.proyectofinal_ap2.presentation.navigation.Screen.HomeScreen
-import edu.ucne.proyectofinal_ap2.presentation.navigation.Screen.PerfilScreen
-import edu.ucne.proyectofinal_ap2.presentation.pedidos.MisPedidosScreen
 import edu.ucne.proyectofinal_ap2.presentation.pedidos.PersonalizarPedidoScreen
 import edu.ucne.proyectofinal_ap2.presentation.pedidos.VerPedidosScreen
 import edu.ucne.proyectofinal_ap2.presentation.perfil.PerfilScreen
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import edu.ucne.proyectofinal_ap2.R
-import edu.ucne.proyectofinal_ap2.data.entities.Letrero
+import edu.ucne.proyectofinal_ap2.presentation.admin.ListaPedidosAdminScreen
+import edu.ucne.proyectofinal_ap2.presentation.clientes.ClienteMenuScreen
 import edu.ucne.proyectofinal_ap2.presentation.menu.AdminMenuScreen
 import edu.ucne.proyectofinal_ap2.presentation.menu.AgregarLetreroScreen
-import edu.ucne.proyectofinal_ap2.presentation.menu.DetalleLetreroScreen
+import edu.ucne.proyectofinal_ap2.presentation.menu.AgregarMaterialScreen
 import edu.ucne.proyectofinal_ap2.presentation.menu.EditarLetreroScreen
+import edu.ucne.proyectofinal_ap2.presentation.menu.EditarMaterialScreen
 import edu.ucne.proyectofinal_ap2.presentation.menu.EliminarLetreroScreen
-import edu.ucne.proyectofinal_ap2.presentation.menu.LetreroViewModel
+import edu.ucne.proyectofinal_ap2.presentation.menu.EliminarMaterialScreen
+import edu.ucne.proyectofinal_ap2.presentation.clientes.HomeClienteCatalogo
+import edu.ucne.proyectofinal_ap2.presentation.clientes.MisPedidosScreen
+import edu.ucne.proyectofinal_ap2.presentation.clientes.PagoInstruccionScreen
+import edu.ucne.proyectofinal_ap2.presentation.letreros.DetalleLetreroScreen
+import edu.ucne.proyectofinal_ap2.presentation.menu.MaterialViewModel
+import edu.ucne.proyectofinal_ap2.presentation.viewModels.LetreroViewModel
 import edu.ucne.proyectofinal_ap2.presentation.menu.OpcionesLetreroScreen
+import edu.ucne.proyectofinal_ap2.presentation.menu.OpcionesMaterialesScreen
+import edu.ucne.proyectofinal_ap2.presentation.pedidos.CrearPedidoScreen
+import edu.ucne.proyectofinal_ap2.presentation.viewModels.PedidoViewModel
+
 
 @Composable
 fun AppNavHost(navHostController: NavHostController) {
@@ -89,14 +95,18 @@ fun AppNavHost(navHostController: NavHostController) {
             HomeScreen(
                 userName = userName,
                 isAdmin = isAdmin,
-                onVerPedidos = { navHostController.navigate(Screen.VerPedidosScreen.route) },
+                onVerPedidos = { navHostController.navigate(Screen.ListaPedidosAdminScreen.route) },
                 onCrearPedido = { navHostController.navigate(Screen.LoginScreen.route) },
                 onCerrarSesion = { navHostController.navigate(Screen.LoginScreen.route) },
                 onPerfilClick = { navHostController.navigate(Screen.PerfilScreen.route) },
                 onMisPedidosClick = { navHostController.navigate(Screen.MisPedidosScreen.route) },
                 onIrAPersonalizar = { navHostController.navigate(Screen.DetalleLetreroScreen.route)},
                 onMaterialClick  = { navHostController.navigate(Screen.PersonalizarPedidoScreen.route)},
-                onOpcionesLetrero = { navHostController.navigate(Screen.OpcionesLetreroScreen.route)}
+                onOpcionesLetrero = { navHostController.navigate(Screen.OpcionesLetreroScreen.route)},
+                onOpcionesMateriales = { navHostController.navigate(Screen.OpcionesMaterialesScreen.route)},
+                onMisPedidos =  { navHostController.navigate(Screen.MisPedidosScreen.route)},
+                onHacerPedidos =  { navHostController.navigate(Screen.CrearPedidoScreen.route)},
+                onCatalogo = { navHostController.navigate(Screen.HomeClienteCatalogoScreen.route)}
             )
         }
 
@@ -104,9 +114,12 @@ fun AppNavHost(navHostController: NavHostController) {
             val authViewModel: AuthViewModel = hiltViewModel()
 
             RegisterScreen(
-                onRegisterClick = { name, email, password, rol ->
+                onRegisterClick = { nombre, apellido, telefono, direccion, email, password, rol ->
                     authViewModel.registerUser(
-                        name = name,
+                        nombre = nombre,
+                        apellido = apellido,
+                        telefono = telefono,
+                        direccion = direccion,
                         email = email,
                         password = password,
                         rol = rol,
@@ -135,10 +148,11 @@ fun AppNavHost(navHostController: NavHostController) {
             AdminMenuScreen(
                 onVerPedidosClick = { navHostController.popBackStack() },
                 onOpcionesLetrero = { navHostController.navigate(Screen.OpcionesLetreroScreen.route)},
-                onAgregarMaterialClick = { navHostController.navigate(Screen.EliminarLetreroScreen.route)}
+                onOpcionesMateriales = { navHostController.navigate(Screen.OpcionesMaterialesScreen.route)}
 
             )
         }
+
         composable(Screen.EditarLetreroScreen.route) {
             EditarLetreroScreen(
 
@@ -164,46 +178,135 @@ fun AppNavHost(navHostController: NavHostController) {
             OpcionesLetreroScreen(
                 onEditarClick = { navHostController.navigate(Screen.EditarLetreroScreen.route)},
                 onAgregarClick = { navHostController.navigate(Screen.AgregarLetreroScreen.route)},
-
                 onEliminarClick = { navHostController.navigate(Screen.EliminarLetreroScreen.route)}
             )
         }
 
+        composable(Screen.OpcionesMaterialesScreen.route) {
+            OpcionesMaterialesScreen(
+                onEditarClick = { navHostController.navigate(Screen.EditarMaterialesScreen.route)},
+                onAgregarClick = { navHostController.navigate(Screen.AgregarMaterialScreen.route)},
 
-        composable(Screen.MisPedidosScreen.route) {
-            MisPedidosScreen(
-                onBackClick = { navHostController.popBackStack() }
+                onEliminarClick = { navHostController.navigate(Screen.EliminarMaterialesScreen.route)}
             )
         }
-        composable(Screen.DetalleLetreroScreen.route) {
 
-            val letrero = Letrero(1,"si", R.drawable.letrero1)
+        composable(Screen.HomeClienteCatalogoScreen.route) {
+            val letreroViewModel: LetreroViewModel = hiltViewModel()
+            val materialViewModel: MaterialViewModel = hiltViewModel()
+            HomeClienteCatalogo(
+
+                onLetreroClick = { letrero ->
+                    navHostController.navigate(
+                        Screen.DetalleLetreroScreen.createRoute(
+                            nombre = letrero.nombre,
+                            descripcion = letrero.descripcion,
+                            imagenUrl = letrero.imagenUrl
+                        )
+                    )
+                },
+                onMaterialClick = { material ->
+                },
+                letreroViewModel = letreroViewModel,
+                materialViewModel = materialViewModel
+            )
+        }
+
+        composable(Screen.AgregarMaterialScreen.route) {
+            val MaterialViewModel: MaterialViewModel = hiltViewModel()
+            AgregarMaterialScreen(
+                viewModel = MaterialViewModel,
+                onMaterialAgregado = {
+                    navHostController.popBackStack()
+                }
+            )
+        }
+        composable(Screen.EliminarMaterialesScreen.route) {
+            EliminarMaterialScreen(
+
+            )
+        }
+
+        composable(Screen.EditarMaterialesScreen.route) {
+            EditarMaterialScreen(
+
+            )
+        }
+
+
+        composable(
+            route = "detalleLetrero/{nombre}/{descripcion}/{imagenUrl}",
+            arguments = listOf(
+                navArgument("nombre") { type = NavType.StringType },
+                navArgument("descripcion") { type = NavType.StringType },
+                navArgument("imagenUrl") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val nombre = backStackEntry.arguments?.getString("nombre") ?: ""
+            val descripcion = backStackEntry.arguments?.getString("descripcion") ?: ""
+            val imagenUrl = backStackEntry.arguments?.getString("imagenUrl") ?: ""
+
             DetalleLetreroScreen(
-                letrero = letrero,
+                nombre = nombre,
+                descripcion = descripcion,
+                imagenUrl = imagenUrl,
                 onBack = { navHostController.popBackStack() }
             )
         }
+
         composable(Screen.PersonalizarPedidoScreen.route) {
             PersonalizarPedidoScreen(
             letreroId = 1,
                 onPedidoConfirmado = {navHostController.popBackStack()}
             )
         }
-        composable(Screen.MaterialesScreen.route) {
-            val materialesDisponibles = listOf(
-                Material(1, "Acrílico", "Transparente", R.drawable.letrero1),
-                Material(2, "Madera", "Natural", R.drawable.letrero1)
-            )
-            MaterialesScreen(
-               materiales = materialesDisponibles
+
+        composable(Screen.CrearPedidoScreen.route) {
+            val materialViewModel: MaterialViewModel = hiltViewModel()
+            val pedidoViewModel: PedidoViewModel = hiltViewModel()
+
+            CrearPedidoScreen(
+                materialViewModel = materialViewModel,
+                pedidoViewModel = pedidoViewModel,
+                navHostController = navHostController
+
             )
         }
+
+        composable(Screen.PagoInstruccionScreen.route) {
+            PagoInstruccionScreen(navController = navHostController)
+        }
+
+        composable(Screen.ListaPedidosAdminScreen.route) {
+            val pedidoViewModel: PedidoViewModel = hiltViewModel()
+            ListaPedidosAdminScreen(
+                pedidoViewModel = pedidoViewModel
+            )
+        }
+
+
+
         composable(Screen.PerfilScreen.route) {
+
             PerfilScreen(
-                userName = "Samy",
-                onChangePassword = { navHostController.navigate(Screen.HomeScreen.route) },
-                onChangePhoto = { navHostController.navigate(Screen.HomeScreen.route) }
+
             )
         }
+        composable(Screen.MisPedidosScreen.route) {
+            val pedidoViewModel: PedidoViewModel = hiltViewModel()
+            MisPedidosScreen(
+                pedidoViewModel = pedidoViewModel
+            )
+        }
+
+        composable(Screen.ClienteMenuScreen.route) {
+            ClienteMenuScreen(
+                onPerfil = { navHostController.popBackStack() },
+                onMisPedidos = { navHostController.navigate(Screen.MisPedidosScreen.route)},
+                onHacerPedido = { navHostController.navigate(Screen.CrearPedidoScreen.route)},
+                onCatalogo = { navHostController.navigate(Screen.HomeClienteCatalogoScreen.route)}
+            )
+        }
+
     }
 }
