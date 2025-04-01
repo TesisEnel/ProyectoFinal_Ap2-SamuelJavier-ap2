@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import edu.ucne.proyectofinal_ap2.R
 import edu.ucne.proyectofinal_ap2.data.entities.Letrero
 import edu.ucne.proyectofinal_ap2.data.entities.Material
+import edu.ucne.proyectofinal_ap2.presentation.clientes.ClienteMenuScreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -27,20 +28,17 @@ fun HomeScreen(
     onMisPedidosClick: () -> Unit,
     onIrAPersonalizar: (Int) -> Unit,
     onMaterialClick: (Material) -> Unit,
-    onOpcionesLetrero: () -> Unit
+    onOpcionesLetrero: () -> Unit,
+    onOpcionesMateriales: () -> Unit,
+    onMisPedidos: () -> Unit,
+    onHacerPedidos: () -> Unit,
+    onCatalogo: () -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
 
-    val letrerosDisponibles = listOf(
-        Letrero(1, "Letrero Luminoso", R.drawable.letrero1),
-        Letrero(2, "Letrero de Acrílico", R.drawable.letrero1)
-    )
-    val materialesDisponibles = listOf(
-        Material(1, "Vinilo", "Material resistente al agua", R.drawable.letrero1),
-        Material(2, "Acrílico", "Ideal para letreros luminosos", R.drawable.letrero1)
-    )
+
 
     ModalDrawer(
         drawerState = drawerState,
@@ -116,14 +114,14 @@ fun HomeScreen(
                     AdminMenuScreen(
                         onVerPedidosClick = onVerPedidos,
                         onOpcionesLetrero= onOpcionesLetrero,
-                        onAgregarMaterialClick = {  }
+                        onOpcionesMateriales = onOpcionesMateriales
                     )
                 } else {
-                    HomeClienteCatalogo(
-                        letreros = letrerosDisponibles,
-                        materiales = materialesDisponibles,
-                        onLetreroClick = { letrero -> onIrAPersonalizar(letrero.id) },
-                        onMaterialClick = onMaterialClick
+                    ClienteMenuScreen(
+                        onHacerPedido = onHacerPedidos,
+                        onMisPedidos = onMisPedidos,
+                        onPerfil = {},
+                        onCatalogo = onCatalogo
                     )
                 }
             }
