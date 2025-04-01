@@ -6,6 +6,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
     alias(libs.plugins.kotlinx.serialization)
     id("com.google.gms.google-services")
+
 }
 android {
     namespace = "edu.ucne.proyectofinal_ap2"
@@ -72,8 +73,9 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics-ktx:21.5.0")
     implementation("com.google.firebase:firebase-firestore-ktx:24.9.1")
     implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
-
-
+    implementation("com.google.firebase:firebase-messaging:23.4.1")
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("com.google.code.gson:gson:2.10")
 
     //Hilt
     implementation("com.google.dagger:hilt-android:2.51")
