@@ -21,7 +21,7 @@ import edu.ucne.proyectofinal_ap2.R
 fun AdminMenuScreen(
     onVerPedidosClick: () -> Unit,
     onOpcionesLetrero: () -> Unit,
-    onAgregarMaterialClick: () -> Unit
+    onOpcionesMateriales: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -60,7 +60,7 @@ fun AdminMenuScreen(
                 AdminCard(
                     titulo = "Materiales",
                     imagenRes = R.drawable.material,
-                    onClick = onAgregarMaterialClick
+                    onClick = onOpcionesMateriales
                 )
             }
 
