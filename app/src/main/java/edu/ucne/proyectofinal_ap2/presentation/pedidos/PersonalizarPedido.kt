@@ -32,12 +32,11 @@ fun PersonalizarPedidoScreen(
 ) {
     var texto by remember { mutableStateOf("") }
 
-    // Tipos de letrero
+
     val tiposLetrero = listOf("Letrero Luminoso", "Letrero de Acrílico", "Letrero de Madera", "Letrero de Metal")
     var tipoSeleccionado by remember { mutableStateOf(tiposLetrero[0]) }
     var tipoExpanded by remember { mutableStateOf(false) }
 
-    // Tamaños
     val opcionesTamano = listOf("Pequeño", "Mediano", "Grande", "Personalizado")
     var tamanoSeleccionado by remember { mutableStateOf(opcionesTamano[0]) }
     var tamanoExpanded by remember { mutableStateOf(false) }
@@ -52,7 +51,7 @@ fun PersonalizarPedidoScreen(
     ) {
         Text("Personaliza tu pedido", style = MaterialTheme.typography.h6)
 
-        // 🧩 Selector de tipo de letrero
+
         ExposedDropdownMenuBox(
             expanded = tipoExpanded,
             onExpandedChange = { tipoExpanded = !tipoExpanded }
@@ -81,7 +80,6 @@ fun PersonalizarPedidoScreen(
             }
         }
 
-        // Campo para texto
         OutlinedTextField(
             value = texto,
             onValueChange = { texto = it },
@@ -89,7 +87,6 @@ fun PersonalizarPedidoScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        // 🧩 Selector de tamaño
         ExposedDropdownMenuBox(
             expanded = tamanoExpanded,
             onExpandedChange = {
@@ -131,7 +128,7 @@ fun PersonalizarPedidoScreen(
         }
 
         Button(onClick = {
-            // Lógica para subir imagen
+
         }) {
             Text("Subir imagen del logo")
         }
