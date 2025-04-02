@@ -33,19 +33,43 @@ class PedidoViewModel @Inject constructor() : ViewModel() {
     var isSaving by mutableStateOf(false)
         private set
 
-    fun calcularPrecioPedido(medida: String, alto: String = "", ancho: String = ""): Double {
-        return when (medida) {
-            "Pequeño" -> 500.0
-            "Mediano" -> 1000.0
-            "Grande" -> 1500.0
-            "Personalizado" -> {
-                val h = alto.toDoubleOrNull() ?: 0.0
-                val w = ancho.toDoubleOrNull() ?: 0.0
-                (h * w * 0.5)
-            }
+    private val precioPorCm2Material = mapOf(
+        "Vinilo" to 0.45,
+        "Acrílico" to 0.60,
+        "PVC" to 0.35,
+        "Lona" to 0.25,
+        "Madera" to 0.50
+    )
 
-            else -> 0.0
+    private val medidasPorDefecto = mapOf(
+        "Pequeño" to (30 to 30),
+        "Mediano" to (45 to 45),
+        "Grande" to (60 to 60)
+    )
+
+    fun calcularPrecioPedido(
+        medida: String,
+        altoTexto: String = "",
+        anchoTexto: String = "",
+        material: String = ""
+    ): Double {
+        val precioCm2 = precioPorCm2Material[material] ?: 0.40
+
+        val (alto, ancho) = when (medida) {
+            "Pequeño", "Mediano", "Grande" -> medidasPorDefecto[medida] ?: (0 to 0)
+            "Personalizado" -> {
+                val altoCm = altoTexto.toDoubleOrNull() ?: 0.0
+                val anchoCm = anchoTexto.toDoubleOrNull() ?: 0.0
+
+                if (altoCm > 60 || anchoCm > 60) return 0.0
+
+                (altoCm.toInt() to anchoCm.toInt())
+            }
+            else -> (0 to 0)
         }
+
+        val area = alto * ancho
+        return area * precioCm2
     }
 
     fun guardarPedido(pedido: Pedido, onSuccess: () -> Unit, onError: (String) -> Unit) {
