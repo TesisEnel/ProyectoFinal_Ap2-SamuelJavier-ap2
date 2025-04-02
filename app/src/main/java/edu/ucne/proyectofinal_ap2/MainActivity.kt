@@ -14,6 +14,8 @@ import com.google.firebase.FirebaseApp
 import dagger.hilt.android.AndroidEntryPoint
 import edu.ucne.proyectofinal_ap2.presentation.navigation.AppNavHost
 import edu.ucne.proyectofinal_ap2.ui.theme.ProyectoFinal_Ap2Theme
+import androidx.appcompat.app.AppCompatDelegate
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -21,8 +23,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this)
         enableEdgeToEdge()
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         setContent {
-            ProyectoFinal_Ap2Theme {
+            ProyectoFinal_Ap2Theme(darkTheme = false) {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Column(
                         modifier = Modifier
