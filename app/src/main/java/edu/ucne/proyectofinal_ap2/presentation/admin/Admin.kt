@@ -7,7 +7,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,79 +22,91 @@ import edu.ucne.proyectofinal_ap2.R
 @Composable
 fun AdminMenuScreen(
     onVerPedidosClick: () -> Unit,
-    onPerfilClick:() -> Unit,
+    onPerfilClick: () -> Unit,
     onOpcionesLetrero: () -> Unit,
     onOpcionesMateriales: () -> Unit,
     onVerUsuariosClick: () -> Unit,
     onCerrarSesion: () -> Unit,
-
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Panel de Administración",
-            style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxSize()
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Menu") }
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(16.dp)
+                .fillMaxSize()
         ) {
-            item {
-                AdminCard(
-                    titulo = "Ver Pedidos",
-                    imagenRes = R.drawable.pedido,
-                    onClick = onVerPedidosClick
-                )
-            }
 
-            item {
-                AdminCard(
-                    titulo = "Letreros",
-                    imagenRes = R.drawable.letrero,
-                    onClick = onOpcionesLetrero
-                )
-            }
 
-            item {
-                AdminCard(
-                    titulo = "Materiales",
-                    imagenRes = R.drawable.material,
-                    onClick = onOpcionesMateriales
+                Text(
+                    text = "Panel Administrador",
+                    style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
+                    modifier = Modifier.padding(bottom = 16.dp)
                 )
-            }
 
-            item {
-                AdminCard(
-                    titulo = "Usuarios",
-                    imagenRes = R.drawable.usuarios,
-                    onClick = onVerUsuariosClick
-                )
-            }
-            item {
-                AdminCard(
-                    titulo = "Perfil",
-                    imagenRes = R.drawable.perfil,
-                    onClick = onPerfilClick
-                )
-            }
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                item {
+                    AdminCard(
+                        titulo = "Ver Pedidos",
+                        imagenRes = R.drawable.pedido,
+                        onClick = onVerPedidosClick
+                    )
+                }
 
-            item {
-                AdminCard(
-                    titulo = "Cerrar Sesión",
-                    imagenRes = R.drawable.logout,
-                    onClick = onCerrarSesion
-                )
+                item {
+                    AdminCard(
+                        titulo = "Letreros",
+                        imagenRes = R.drawable.letrero,
+                        onClick = onOpcionesLetrero
+                    )
+                }
+
+                item {
+                    AdminCard(
+                        titulo = "Materiales",
+                        imagenRes = R.drawable.material,
+                        onClick = onOpcionesMateriales
+                    )
+                }
+
+                item {
+                    AdminCard(
+                        titulo = "Usuarios",
+                        imagenRes = R.drawable.usuarios,
+                        onClick = onVerUsuariosClick
+                    )
+                }
+
+                item {
+                    AdminCard(
+                        titulo = "Perfil",
+                        imagenRes = R.drawable.perfil,
+                        onClick = onPerfilClick
+                    )
+                }
+
+                item {
+                    AdminCard(
+                        titulo = "Cerrar Sesión",
+                        imagenRes = R.drawable.logout,
+                        onClick = onCerrarSesion
+                    )
+                }
             }
         }
     }
 }
+
 
 @Composable
 fun AdminCard(titulo: String, imagenRes: Int, onClick: () -> Unit) {
