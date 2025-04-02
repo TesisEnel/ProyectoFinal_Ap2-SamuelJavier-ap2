@@ -51,7 +51,8 @@ class PedidoViewModel @Inject constructor() : ViewModel() {
         medida: String,
         altoTexto: String = "",
         anchoTexto: String = "",
-        material: String = ""
+        material: String = "",
+        cantidad: Int = 1
     ): Double {
         val precioCm2 = precioPorCm2Material[material] ?: 0.40
 
@@ -69,7 +70,7 @@ class PedidoViewModel @Inject constructor() : ViewModel() {
         }
 
         val area = alto * ancho
-        return area * precioCm2
+        return area * precioCm2 * cantidad
     }
 
     fun guardarPedido(pedido: Pedido, onSuccess: () -> Unit, onError: (String) -> Unit) {
@@ -96,6 +97,7 @@ class PedidoViewModel @Inject constructor() : ViewModel() {
                     "ancho" to pedido.ancho,
                     "logoUrl" to pedido.logoUrl,
                     "precio" to pedido.precio,
+                    "cantidad" to pedido.cantidad,
                     "estado" to pedido.estado,
                     "fecha" to System.currentTimeMillis(),
                     "userId" to userId,
@@ -137,7 +139,9 @@ class PedidoViewModel @Inject constructor() : ViewModel() {
                         apellido = doc.getString("apellido") ?: "",
                         direccion = doc.getString("direccion") ?: "",
                         telefono = doc.getString("telefono") ?: "",
-                        fecha = doc.getLong("fecha")
+                        fecha = doc.getLong("fecha"),
+                        cantidad = doc.getLong("cantidad")?.toInt() ?:1,
+                        mensaje = doc.getString("mensaje") ?: ""
                     )
                 } ?: emptyList()
 
@@ -147,14 +151,18 @@ class PedidoViewModel @Inject constructor() : ViewModel() {
 
 
 
-    fun cambiarEstadoPedido(id: String, nuevoEstado: String) {
+    fun cambiarEstadoPedido(id: String, nuevoEstado: String, mensaje: String) {
         Firebase.firestore.collection("pedidos").document(id)
-            .update("estado", nuevoEstado)
+            .update(mapOf(
+                "estado" to nuevoEstado,
+                "mensaje" to mensaje
+            ))
             .addOnSuccessListener {
+                Log.d("PedidoViewModel", "Estado actualizado correctamente.")
                 obtenerPedidos()
             }
             .addOnFailureListener {
-                Log.e("PedidoViewModel", "Error al cambiar estado", it)
+                Log.e("PedidoViewModel", "Error al actualizar el estado del pedido", it)
             }
     }
 
