@@ -37,9 +37,6 @@ fun HomeScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-
-
-
     ModalDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -82,18 +79,7 @@ fun HomeScreen(
         }
     ) {
         Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("Inicio") },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            scope.launch { drawerState.open() }
-                        }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menú")
-                        }
-                    }
-                )
-            }
+
         ) { padding ->
             Column(
                 modifier = Modifier
