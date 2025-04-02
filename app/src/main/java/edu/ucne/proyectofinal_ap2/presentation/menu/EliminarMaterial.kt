@@ -21,6 +21,8 @@ import com.google.firebase.ktx.Firebase
 fun EliminarMaterialScreen(navController: NavHostController) {
     val context = LocalContext.current
     var materiales by remember { mutableStateOf<List<Pair<String, String>>>(emptyList()) }
+    var showDialog by remember { mutableStateOf(false) }
+    var materialToDelete by remember { mutableStateOf<Pair<String, String>?>(null) }
 
     LaunchedEffect(Unit) {
         Firebase.firestore.collection("materiales")
@@ -54,12 +56,8 @@ fun EliminarMaterialScreen(navController: NavHostController) {
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
                             .clickable {
-                                Firebase.firestore.collection("materiales").document(id)
-                                    .delete()
-                                    .addOnSuccessListener {
-                                        Toast.makeText(context, "Material eliminado", Toast.LENGTH_SHORT).show()
-                                        materiales = materiales.filterNot { it.first == id }
-                                    }
+                                materialToDelete = id to nombre
+                                showDialog = true
                             },
                         elevation = 4.dp
                     ) {
@@ -72,5 +70,34 @@ fun EliminarMaterialScreen(navController: NavHostController) {
             }
         }
     }
-}
 
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Confirmación") },
+            text = { Text("¿Estás seguro de querer eliminar el material '${materialToDelete?.second}'?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        materialToDelete?.let { (id, _) ->
+                            Firebase.firestore.collection("materiales").document(id)
+                                .delete()
+                                .addOnSuccessListener {
+                                    Toast.makeText(context, "Material eliminado", Toast.LENGTH_SHORT).show()
+                                    materiales = materiales.filterNot { it.first == id }
+                                    showDialog = false
+                                }
+                        }
+                    }
+                ) {
+                    Text("Eliminar")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+}

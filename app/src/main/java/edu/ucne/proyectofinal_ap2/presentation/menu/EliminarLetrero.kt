@@ -2,6 +2,8 @@ package edu.ucne.proyectofinal_ap2.presentation.menu
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -23,6 +25,8 @@ import androidx.navigation.NavController
 fun EliminarLetreroScreen(navController: NavController) {
     val context = LocalContext.current
     var letreros by remember { mutableStateOf<List<Pair<String, String>>>(emptyList()) }
+    var showDialog by remember { mutableStateOf(false) }
+    var letreroToDelete by remember { mutableStateOf<Pair<String, String>?>(null) }
 
     LaunchedEffect(Unit) {
         Firebase.firestore.collection("letreros").get()
@@ -52,14 +56,8 @@ fun EliminarLetreroScreen(navController: NavController) {
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
                         .clickable {
-                            Firebase.firestore.collection("letreros").document(id).delete()
-                                .addOnSuccessListener {
-                                    Toast.makeText(context, "Eliminado correctamente", Toast.LENGTH_SHORT).show()
-                                    letreros = letreros.filterNot { it.first == id }
-                                }
-                                .addOnFailureListener {
-                                    Toast.makeText(context, "Error al eliminar", Toast.LENGTH_SHORT).show()
-                                }
+                            letreroToDelete = id to nombre
+                            showDialog = true
                         },
                     elevation = 4.dp
                 ) {
@@ -67,5 +65,37 @@ fun EliminarLetreroScreen(navController: NavController) {
                 }
             }
         }
+    }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Confirmar eliminación") },
+            text = { Text("¿Estás seguro de querer eliminar el letrero '${letreroToDelete?.second}'?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        letreroToDelete?.let { (id, _) ->
+                            Firebase.firestore.collection("letreros").document(id).delete()
+                                .addOnSuccessListener {
+                                    Toast.makeText(context, "Eliminado correctamente", Toast.LENGTH_SHORT).show()
+                                    letreros = letreros.filterNot { it.first == id }
+                                    showDialog = false
+                                }
+                                .addOnFailureListener {
+                                    Toast.makeText(context, "Error al eliminar", Toast.LENGTH_SHORT).show()
+                                }
+                        }
+                    }
+                ) {
+                    Text("Eliminar")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 }
