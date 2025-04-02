@@ -225,7 +225,7 @@ fun CrearPedidoScreen(
             }
 
             Spacer(Modifier.height(16.dp))
-            Text("Sube un logo o imagen opcional", fontWeight = FontWeight.Bold)
+            Text("Sube un logo o imagen", fontWeight = FontWeight.Bold)
 
             Button(onClick = { launcher.launch("image/*") }) {
                 Text("Seleccionar imagen")
