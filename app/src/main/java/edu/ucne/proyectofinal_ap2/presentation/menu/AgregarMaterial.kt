@@ -29,7 +29,7 @@ fun AgregarMaterialScreen(
     val context = LocalContext.current
     var nombre by remember { mutableStateOf("") }
     var descripcion by remember { mutableStateOf("") }
-    var precioCm2 by remember { mutableStateOf("") } // 🆕 nuevo campo
+    var precioCm2 by remember { mutableStateOf("") }
     var imagenUri by remember { mutableStateOf<Uri?>(null) }
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {

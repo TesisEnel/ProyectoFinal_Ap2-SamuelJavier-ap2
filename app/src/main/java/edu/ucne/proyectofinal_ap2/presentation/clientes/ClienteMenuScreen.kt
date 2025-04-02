@@ -6,7 +6,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,60 +28,63 @@ fun ClienteMenuScreen(
     onPerfilClick: () -> Unit,
     onCuentaBanco: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Panel Cliente",
-            style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxSize()
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Menu") }
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(16.dp)
+                .fillMaxSize()
         ) {
-            item {
-                OpcionCard("Hacer Pedido", R.drawable.editar) { onHacerPedido() }
-            }
-
-            item {
-                OpcionCard("Mis Pedidos", R.drawable.pedido) { onMisPedidos() }
-            }
+            Text(
+                text = "Panel Cliente",
+                style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
 
 
-            item {
-                OpcionCard("Ver Catalogo", R.drawable.catalogo) { onCatalogo() }
-            }
-            item {
-                OpcionCard(
-                    titulo = "Perfil",
-                    imagenRes = R.drawable.perfil,
-                    onClick = onPerfilClick
-                )
-            }
-            item {
-                OpcionCard(
-                    titulo = "Ver Cuenta Banco",
-                    imagenRes = R.drawable.cuentabanco,
-                    onClick = onCuentaBanco
-                )
-            }
-            item {
-                OpcionCard(
-                    titulo = "Cerrar Sesión",
-                    imagenRes = R.drawable.logout,
-                    onClick = onCerrarSesion
-                )
-            }
 
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+
+                item {
+                    OpcionCard("Ver Catálogo", R.drawable.catalogo) { onCatalogo() }
+                }
+
+                item {
+                    OpcionCard("Mis Pedidos", R.drawable.pedido) { onMisPedidos() }
+                }
+
+                item {
+                    OpcionCard("Hacer Pedido", R.drawable.editar) { onHacerPedido() }
+                }
+                item {
+                    OpcionCard("Cuenta Banco", R.drawable.cuentabanco) { onCuentaBanco() }
+                }
+
+                item {
+                    OpcionCard("Perfil", R.drawable.perfil) { onPerfilClick() }
+                }
+
+                item {
+                    OpcionCard("Cerrar Sesión", R.drawable.logout) { onCerrarSesion() }
+                }
+            }
         }
     }
-}
+    }
+
+
 
 @Composable
 fun OpcionCard(titulo: String, imagenRes: Int, onClick: () -> Unit) {
