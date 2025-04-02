@@ -14,13 +14,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import edu.ucne.proyectofinal_ap2.R
+import edu.ucne.proyectofinal_ap2.presentation.admin.AdminCard
 
 @Composable
 fun ClienteMenuScreen(
     onHacerPedido: () -> Unit,
     onMisPedidos: () -> Unit,
     onPerfil: () -> Unit,
-    onCatalogo: () -> Unit
+    onCatalogo: () -> Unit,
+    onCerrarSesion: () -> Unit,
+    onPerfilClick: () -> Unit,
+    onCuentaBanco: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -28,7 +32,7 @@ fun ClienteMenuScreen(
             .padding(16.dp)
     ) {
         Text(
-            text = "Bienvenido al Catálogo",
+            text = "Panel Cliente",
             style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
             modifier = Modifier.padding(bottom = 16.dp)
         )
@@ -47,11 +51,30 @@ fun ClienteMenuScreen(
                 OpcionCard("Mis Pedidos", R.drawable.pedido) { onMisPedidos() }
             }
 
+
             item {
-                OpcionCard("Mi Perfil", R.drawable.perfil) { onPerfil() }
+                OpcionCard("Ver Catalogo", R.drawable.catalogo) { onCatalogo() }
             }
             item {
-                OpcionCard("Ver Catalogo", R.drawable.perfil) { onCatalogo() }
+                OpcionCard(
+                    titulo = "Perfil",
+                    imagenRes = R.drawable.perfil,
+                    onClick = onPerfilClick
+                )
+            }
+            item {
+                OpcionCard(
+                    titulo = "Ver Cuenta Banco",
+                    imagenRes = R.drawable.cuentabanco,
+                    onClick = onCuentaBanco
+                )
+            }
+            item {
+                OpcionCard(
+                    titulo = "Cerrar Sesión",
+                    imagenRes = R.drawable.logout,
+                    onClick = onCerrarSesion
+                )
             }
 
         }
