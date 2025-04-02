@@ -12,17 +12,24 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import androidx.compose.foundation.lazy.items
-
-
-
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.navigation.NavHostController
 
 @Composable
-fun EditarMaterialScreen() {
+fun EditarMaterialScreen(navController: NavHostController) {
     val context = LocalContext.current
     var materiales by remember { mutableStateOf<List<DocumentSnapshot>>(emptyList()) }
+    var materialSeleccionado by remember { mutableStateOf<DocumentSnapshot?>(null) }
+    var mostrarDialogo by remember { mutableStateOf(false) }
+
+    // Campos de edición
     var nombreNuevo by remember { mutableStateOf("") }
     var descripcionNueva by remember { mutableStateOf("") }
-    var materialSeleccionado by remember { mutableStateOf<DocumentSnapshot?>(null) }
+    var precioNuevo by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         Firebase.firestore.collection("materiales")
@@ -32,65 +39,114 @@ fun EditarMaterialScreen() {
             }
     }
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text("Editar Materiales", style = MaterialTheme.typography.h6)
+    Column(modifier = Modifier.fillMaxSize()) {
+        TopAppBar(
+            title = { Text("Editar Materiales") },
+            navigationIcon = {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                }
+            }
+        )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            LazyColumn {
+                items(materiales) { doc ->
+                    val nombre = doc.getString("nombre") ?: "Sin nombre"
+                    val descripcion = doc.getString("descripcion") ?: ""
+                    val precio = doc.getDouble("precioCm2") ?: 0.0
 
-        LazyColumn {
-            items(materiales) { doc ->
-                val nombre = doc.getString("nombre") ?: "Sin nombre"
-                val descripcion = doc.getString("descripcion") ?: ""
-
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                        .clickable {
-                            materialSeleccionado = doc
-                            nombreNuevo = nombre
-                            descripcionNueva = descripcion
-                        },
-                    elevation = 4.dp
-                ) {
-                    Text(
-                        text = nombre,
-                        modifier = Modifier.padding(16.dp)
-                    )
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                            .clickable {
+                                materialSeleccionado = doc
+                                nombreNuevo = nombre
+                                descripcionNueva = descripcion
+                                precioNuevo = precio.toString()
+                                mostrarDialogo = true
+                            },
+                        elevation = 4.dp
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text("Nombre: $nombre")
+                            Text("Precio cm²: RD$${"%.2f".format(precio)}")
+                        }
+                    }
                 }
             }
         }
+    }
 
-        materialSeleccionado?.let { doc ->
-            Spacer(modifier = Modifier.height(16.dp))
-            OutlinedTextField(
-                value = nombreNuevo,
-                onValueChange = { nombreNuevo = it },
-                label = { Text("Nuevo nombre") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedTextField(
-                value = descripcionNueva,
-                onValueChange = { descripcionNueva = it },
-                label = { Text("Nueva descripción") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Button(onClick = {
-                Firebase.firestore.collection("materiales").document(doc.id)
-                    .update("nombre", nombreNuevo, "descripcion", descripcionNueva)
-                    .addOnSuccessListener {
-                        Toast.makeText(context, "Material actualizado", Toast.LENGTH_SHORT).show()
-                        materialSeleccionado = null
+    if (mostrarDialogo && materialSeleccionado != null) {
+        AlertDialog(
+            onDismissRequest = { mostrarDialogo = false },
+            title = { Text("Editar Material") },
+            text = {
+                Column {
+                    OutlinedTextField(
+                        value = nombreNuevo,
+                        onValueChange = { nombreNuevo = it },
+                        label = { Text("Nuevo nombre") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = descripcionNueva,
+                        onValueChange = { descripcionNueva = it },
+                        label = { Text("Nueva descripción") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = precioNuevo,
+                        onValueChange = { precioNuevo = it },
+                        label = { Text("Nuevo precio por cm²") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+                    )
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    val precioDouble = precioNuevo.toDoubleOrNull()
+                    if (precioDouble != null) {
+                        Firebase.firestore.collection("materiales").document(materialSeleccionado!!.id)
+                            .update(
+                                mapOf(
+                                    "nombre" to nombreNuevo,
+                                    "descripcion" to descripcionNueva,
+                                    "precioCm2" to precioDouble
+                                )
+                            )
+                            .addOnSuccessListener {
+                                Toast.makeText(context, "Material actualizado", Toast.LENGTH_SHORT).show()
+                                mostrarDialogo = false
+                                materialSeleccionado = null
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText(context, "Error al actualizar", Toast.LENGTH_SHORT).show()
+                            }
+                    } else {
+                        Toast.makeText(context, "Precio inválido", Toast.LENGTH_SHORT).show()
                     }
-            }) {
-                Text("Guardar cambios")
+                }) {
+                    Text("Guardar")
+                }
+            },
+            dismissButton = {
+                OutlinedButton(onClick = {
+                    mostrarDialogo = false
+                    materialSeleccionado = null
+                }) {
+                    Text("Cancelar")
+                }
             }
-        }
+        )
     }
 }
