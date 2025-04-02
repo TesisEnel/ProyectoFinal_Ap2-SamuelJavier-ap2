@@ -30,7 +30,8 @@ sealed class Screen(val route: String) {
     object CrearPedidoScreen : Screen("CrearPedidoScreen")
     object  PagoInstruccionScreen : Screen(" PagoInstruccionScreen")
     object  ListaPedidosAdminScreen: Screen("ListaPedidosAdminScreen")
-
+    object  CuentaBancoScreen: Screen("CuentaBancoScreen")
+    object  ListaUsuariosScreen: Screen("ListaUsuariosScreen")
 
 
 
