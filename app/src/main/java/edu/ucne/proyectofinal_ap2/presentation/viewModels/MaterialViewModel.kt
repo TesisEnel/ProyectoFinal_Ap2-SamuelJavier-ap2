@@ -46,6 +46,7 @@ class MaterialViewModel @Inject constructor() : ViewModel() {
         nombre: String,
         descripcion: String,
         imagenUri: Uri,
+        precioCm2: Double,
         context: Context,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
@@ -58,7 +59,8 @@ class MaterialViewModel @Inject constructor() : ViewModel() {
                     val material = hashMapOf(
                         "nombre" to nombre,
                         "descripcion" to descripcion,
-                        "imagenUrl" to uri.toString()
+                        "imagenUrl" to uri.toString(),
+                        "precioCm2" to precioCm2 // 🔹 se guarda en Firebase
                     )
 
                     Firebase.firestore.collection("materiales")
@@ -76,4 +78,5 @@ class MaterialViewModel @Inject constructor() : ViewModel() {
                 onError("Error al subir imagen")
             }
     }
+
 }
