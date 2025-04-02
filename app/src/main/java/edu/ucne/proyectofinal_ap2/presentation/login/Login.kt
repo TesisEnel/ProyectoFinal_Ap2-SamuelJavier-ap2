@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -19,16 +20,27 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import edu.ucne.proyectofinal_ap2.R
+import androidx.activity.compose.BackHandler
+import android.app.Activity
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.Dp
+import androidx.compose.foundation.shape.RoundedCornerShape
 
 @Composable
 fun LoginScreen(
     onLoginClick: (email: String, password: String) -> Unit,
     onGoToRegister: () -> Unit
 ) {
+
     val context = LocalContext.current
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    val activity = LocalContext.current as? Activity
+
+
+    val customFont = FontFamily.SansSerif
 
     Column(
         modifier = Modifier
@@ -41,14 +53,15 @@ fun LoginScreen(
             painter = painterResource(id = R.drawable.easysignlogo),
             contentDescription = "Logo EasySign",
             modifier = Modifier
-                .height(240.dp)
-                .padding(bottom = 24.dp)
+                .height(300.dp)
+                .padding(bottom = 10.dp)
         )
 
         Text(
             text = "Iniciar Sesión",
             fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
+            fontFamily = customFont,
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
@@ -83,7 +96,8 @@ fun LoginScreen(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
+                .height(50.dp),
+            shape = RoundedCornerShape(12.dp)
         ) {
             Text("Ingresar")
         }
@@ -96,5 +110,8 @@ fun LoginScreen(
             modifier = Modifier.clickable { onGoToRegister() },
             textAlign = TextAlign.Center
         )
+    }
+    BackHandler {
+        activity?.finish()
     }
 }
