@@ -36,10 +36,13 @@ import edu.ucne.proyectofinal_ap2.presentation.clientes.HomeClienteCatalogo
 import edu.ucne.proyectofinal_ap2.presentation.clientes.MisPedidosScreen
 import edu.ucne.proyectofinal_ap2.presentation.clientes.PagoInstruccionScreen
 import edu.ucne.proyectofinal_ap2.presentation.letreros.DetalleLetreroScreen
+import edu.ucne.proyectofinal_ap2.presentation.login.SplashScreen
+import edu.ucne.proyectofinal_ap2.presentation.menu.DetalleMaterialScreen
 import edu.ucne.proyectofinal_ap2.presentation.menu.MaterialViewModel
 import edu.ucne.proyectofinal_ap2.presentation.viewModels.LetreroViewModel
 import edu.ucne.proyectofinal_ap2.presentation.menu.OpcionesLetreroScreen
 import edu.ucne.proyectofinal_ap2.presentation.menu.OpcionesMaterialesScreen
+import edu.ucne.proyectofinal_ap2.presentation.navigation.Screen.DetalleMaterialScreen
 import edu.ucne.proyectofinal_ap2.presentation.pedidos.CrearPedidoScreen
 import edu.ucne.proyectofinal_ap2.presentation.viewModels.PedidoViewModel
 import edu.ucne.proyectofinal_ap2.presentation.viewModels.UsuarioViewModel
@@ -52,7 +55,7 @@ fun AppNavHost(navHostController: NavHostController) {
 
     NavHost(
         navController = navHostController,
-        startDestination = Screen.LoginScreen.route
+        startDestination = Screen.SplashScreen.route
     ) {
         composable(Screen.LoginScreen.route) { backStackEntry ->
             val authViewModel: AuthViewModel = hiltViewModel(backStackEntry)
@@ -73,6 +76,11 @@ fun AppNavHost(navHostController: NavHostController) {
                 onGoToRegister = {
                     navHostController.navigate(Screen.RegisterScreen.route)
                 }
+            )
+        }
+        composable(Screen.SplashScreen.route) {
+            SplashScreen(
+                navController = navHostController
             )
         }
 
@@ -147,13 +155,14 @@ fun AppNavHost(navHostController: NavHostController) {
 
         composable(Screen.AdminMenuScreen.route) {
             AdminMenuScreen(
-                onVerPedidosClick = { navHostController.popBackStack() },
+                onVerPedidosClick = { navHostController.navigate(Screen.ListaPedidosAdminScreen.route)},
                 onOpcionesLetrero = { navHostController.navigate(Screen.OpcionesLetreroScreen.route)},
                 onOpcionesMateriales = { navHostController.navigate(Screen.OpcionesMaterialesScreen.route)},
                 onVerUsuariosClick = { navHostController.navigate(Screen.ListaUsuariosScreen.route)},
                 onCerrarSesion = {
                     FirebaseAuth.getInstance().signOut()
-                    navHostController.navigate("login") {
+                    Toast.makeText(context, "Sesión cerrada con éxito", Toast.LENGTH_SHORT).show()
+                    navHostController.navigate("LoginScreen") {
                         popUpTo("admin") { inclusive = true }
                     }
                 },
@@ -218,6 +227,15 @@ navController = navHostController
                     )
                 },
                 onMaterialClick = { material ->
+                    navHostController.navigate(
+                       Screen.DetalleMaterialScreen.createRoute(
+                           nombre = material.nombre,
+                           descripcion = material.descripcion,
+                           imagenUrl = material.imagenUrl,
+                           precioCm2 = material.precioCm2
+                       )
+
+                    )
                 },
                 letreroViewModel = letreroViewModel,
                 materialViewModel = materialViewModel,
@@ -274,6 +292,29 @@ navController = navHostController
                 nombre = nombre,
                 descripcion = descripcion,
                 imagenUrl = imagenUrl,
+                onBack = { navHostController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = "detalleMaterial/{nombre}/{descripcion}/{imagenUrl}/{precioCm2}",
+            arguments = listOf(
+                navArgument("nombre") { type = NavType.StringType },
+                navArgument("descripcion") { type = NavType.StringType },
+                navArgument("imagenUrl") { type = NavType.StringType },
+                navArgument("precioCm2") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val nombre = backStackEntry.arguments?.getString("nombre") ?: ""
+            val descripcion = backStackEntry.arguments?.getString("descripcion") ?: ""
+            val imagenUrl = backStackEntry.arguments?.getString("imagenUrl") ?: ""
+            val precioCm2 = backStackEntry.arguments?.getString("precioCm2")?.toDoubleOrNull() ?: 0.0
+
+            DetalleMaterialScreen(
+                nombre = nombre,
+                descripcion = descripcion,
+                imagenUrl = imagenUrl,
+                precioCm2 = precioCm2,
                 onBack = { navHostController.popBackStack() }
             )
         }
@@ -338,8 +379,10 @@ navController = navHostController
                 onHacerPedido = { navHostController.navigate(Screen.CrearPedidoScreen.route)},
                 onCatalogo = { navHostController.navigate(Screen.HomeClienteCatalogoScreen.route)},
                 onCerrarSesion = {
+
                     FirebaseAuth.getInstance().signOut()
-                    navHostController.navigate("login") {
+                    Toast.makeText(context, "Sesión cerrada con éxito", Toast.LENGTH_SHORT).show()
+                    navHostController.navigate("LoginScreen") {
                         popUpTo("cliente") { inclusive = true }
                     }
                 },
