@@ -33,7 +33,6 @@ fun MisPedidosScreen(
     var estadoSeleccionado by remember { mutableStateOf("pendiente") }
 
     val estados = listOf("pendiente", "aceptado", "rechazado", "listo")
-    val pedidosFiltrados = pedidos.filter { it.estado == estadoSeleccionado }
 
     Scaffold(
         topBar = {
@@ -51,7 +50,6 @@ fun MisPedidosScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(16.dp)
-                .verticalScroll(rememberScrollState())
         ) {
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -73,10 +71,9 @@ fun MisPedidosScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            if (pedidosFiltrados.isEmpty()) {
-                Text("No hay pedidos $estadoSeleccionado.")
-            } else {
-                pedidosFiltrados.forEach { pedido ->
+
+            LazyColumn {
+                items(pedidos.filter { it.estado == estadoSeleccionado }) { pedido ->
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -88,15 +85,12 @@ fun MisPedidosScreen(
                             Text("Medida: ${pedido.medida} (${pedido.alto}cm x ${pedido.ancho}cm)")
                             Text("Precio: RD$${pedido.precio}")
                             Text("Estado: ${pedido.estado}")
+                            Text("Mensaje: ${pedido.mensaje}")
 
-                            Spacer(modifier = Modifier.height(4.dp))
-
-                            val fechaTexto = pedido.fecha?.let {
-                                val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                                sdf.format(Date(it))
-                            } ?: "No disponible"
-
-                            Text("Fecha: $fechaTexto")
+                            pedido.fecha?.let {
+                                val fecha = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(it))
+                                Text("Fecha del pedido: $fecha")
+                            } ?: Text("Fecha: No disponible")
                         }
                     }
                 }
@@ -104,4 +98,3 @@ fun MisPedidosScreen(
         }
     }
 }
-
