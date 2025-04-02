@@ -75,8 +75,8 @@ fun ListaUsuariosScreen(
                                 Column {
                                     Text("Nombre: ${usuario.nombre} ${usuario.apellido}")
                                     Text("Correo: ${usuario.email}")
-                                    Text("Teléfono: ${usuario.telefono}")
-                                    Text("Dirección: ${usuario.direccion}")
+                                    Text("Dirección: ${usuario.telefono}")
+                                    Text("Teléfono: ${usuario.direccion}")
                                     Text("Rol: ${usuario.rol}")
                                 }
                             }
