@@ -10,68 +10,115 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.storage.ktx.storage
-
-
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.navigation.NavController
+import com.google.firebase.firestore.DocumentSnapshot
 
 @Composable
-fun EditarLetreroScreen() {
+fun EditarLetreroScreen(
+    navController: NavController
+) {
     val context = LocalContext.current
-    var letreros by remember { mutableStateOf<List<Pair<String, String>>>(emptyList()) }
-    var selectedId by remember { mutableStateOf<String?>(null) }
+    var letreros by remember { mutableStateOf<List<DocumentSnapshot>>(emptyList()) }
+    var selectedLetrero by remember { mutableStateOf<DocumentSnapshot?>(null) }
     var nuevoNombre by remember { mutableStateOf("") }
+    var nuevaDescripcion by remember { mutableStateOf("") }
+    var mostrarDialogo by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         Firebase.firestore.collection("letreros").get()
             .addOnSuccessListener { result ->
-                letreros = result.documents.map {
-                    it.id to (it.getString("nombre") ?: "Sin nombre")
-                }
+                letreros = result.documents
             }
     }
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text("Editar Letrero", style = MaterialTheme.typography.h6)
-        Spacer(modifier = Modifier.height(16.dp))
-
-        letreros.forEach { (id, nombre) ->
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 6.dp)
-                    .clickable {
-                        selectedId = id
-                        nuevoNombre = nombre
-                    },
-                elevation = 4.dp
-            ) {
-                Text(nombre, modifier = Modifier.padding(16.dp))
+    Column(modifier = Modifier.fillMaxSize()) {
+        TopAppBar(
+            title = { Text("Editar Letrero") },
+            navigationIcon = {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Atrás")
+                }
             }
-        }
+        )
 
-        if (selectedId != null) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Spacer(modifier = Modifier.height(16.dp))
-            OutlinedTextField(
-                value = nuevoNombre,
-                onValueChange = { nuevoNombre = it },
-                label = { Text("Nuevo nombre") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(onClick = {
-                Firebase.firestore.collection("letreros").document(selectedId!!).update("nombre", nuevoNombre)
-                    .addOnSuccessListener {
-                        Toast.makeText(context, "Letrero actualizado", Toast.LENGTH_SHORT).show()
-                        selectedId = null
-                        nuevoNombre = ""
-                    }
-                    .addOnFailureListener {
-                        Toast.makeText(context, "Error al actualizar", Toast.LENGTH_SHORT).show()
-                    }
-            }, modifier = Modifier.fillMaxWidth()) {
-                Text("Actualizar")
+
+            letreros.forEach { doc ->
+                val id = doc.id
+                val nombre = doc.getString("nombre") ?: "Sin nombre"
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 6.dp)
+                        .clickable {
+                            selectedLetrero = doc
+                            nuevoNombre = nombre
+                            nuevaDescripcion = doc.getString("descripcion") ?: ""
+                            mostrarDialogo = true
+                        },
+                    elevation = 4.dp
+                ) {
+                    Text(nombre, modifier = Modifier.padding(16.dp))
+                }
             }
         }
+    }
+
+    if (mostrarDialogo && selectedLetrero != null) {
+        AlertDialog(
+            onDismissRequest = { mostrarDialogo = false },
+            title = { Text("Editar Letrero") },
+            text = {
+                Column {
+                    OutlinedTextField(
+                        value = nuevoNombre,
+                        onValueChange = { nuevoNombre = it },
+                        label = { Text("Nuevo nombre") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = nuevaDescripcion,
+                        onValueChange = { nuevaDescripcion = it },
+                        label = { Text("Nueva descripción") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    val id = selectedLetrero!!.id
+                    Firebase.firestore.collection("letreros").document(id)
+                        .update(
+                            mapOf(
+                                "nombre" to nuevoNombre,
+                                "descripcion" to nuevaDescripcion
+                            )
+                        )
+                        .addOnSuccessListener {
+                            Toast.makeText(context, "Letrero actualizado", Toast.LENGTH_SHORT).show()
+                            mostrarDialogo = false
+                            selectedLetrero = null
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(context, "Error al actualizar", Toast.LENGTH_SHORT).show()
+                        }
+                }) {
+                    Text("Guardar")
+                }
+            },
+            dismissButton = {
+                OutlinedButton(onClick = {
+                    mostrarDialogo = false
+                    selectedLetrero = null
+                }) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 }
