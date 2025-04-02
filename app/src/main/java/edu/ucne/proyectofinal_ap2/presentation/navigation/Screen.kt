@@ -17,6 +17,18 @@ sealed class Screen(val route: String) {
             return "detalleLetrero/${Uri.encode(nombre)}/${Uri.encode(descripcion)}/${Uri.encode(imagenUrl)}"
         }
     }
+    object DetalleMaterialScreen : Screen("detalleMaterial/{nombre}/{descripcion}/{imagenUrl}/{precioCm2}") {
+        fun createRoute(nombre: String, descripcion: String, imagenUrl: String, precioCm2: Double): String {
+            return "detalleMaterial/${
+                Uri.encode(nombre)
+            }/${
+                Uri.encode(descripcion)
+            }/${
+                Uri.encode(imagenUrl)
+            }/$precioCm2"
+        }
+    }
+
     object AdminMenuScreen : Screen("AdminMenuScreen")
     object HomeClienteCatalogoScreen : Screen("HomeClienteCatalogoScreen")
     object AgregarLetreroScreen : Screen("AgregarLetreroScreen")
@@ -32,6 +44,7 @@ sealed class Screen(val route: String) {
     object  ListaPedidosAdminScreen: Screen("ListaPedidosAdminScreen")
     object  CuentaBancoScreen: Screen("CuentaBancoScreen")
     object  ListaUsuariosScreen: Screen("ListaUsuariosScreen")
+    object  SplashScreen: Screen("SplashScreen")
 
 
 
