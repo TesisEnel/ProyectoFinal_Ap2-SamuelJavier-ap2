@@ -1,5 +1,6 @@
 package edu.ucne.proyectofinal_ap2.presentation.login
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -12,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 
 @Composable
@@ -27,6 +29,8 @@ fun RegisterScreen(
     ) -> Unit,
     onGoToLogin: () -> Unit
 ) {
+    val context = LocalContext.current
+
     var nombre by remember { mutableStateOf("") }
     var apellido by remember { mutableStateOf("") }
     var direccion by remember { mutableStateOf("") }
@@ -127,9 +131,7 @@ fun RegisterScreen(
 
         Text("Selecciona tu rol", fontWeight = FontWeight.SemiBold)
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             RadioButton(
                 selected = rol == "cliente",
                 onClick = { rol = "cliente" }
@@ -147,7 +149,15 @@ fun RegisterScreen(
 
         Button(
             onClick = {
-                if (password == confirmPassword) {
+                if (
+                    nombre.isBlank() || apellido.isBlank() || direccion.isBlank() ||
+                    telefono.isBlank() || email.isBlank() || password.isBlank() ||
+                    confirmPassword.isBlank()
+                ) {
+                    Toast.makeText(context, "Por favor, completa todos los campos", Toast.LENGTH_LONG).show()
+                } else if (password != confirmPassword) {
+                    Toast.makeText(context, "Las contraseñas no coinciden", Toast.LENGTH_LONG).show()
+                } else {
                     onRegisterClick(nombre, apellido, direccion, telefono, email, password, rol)
                 }
             },
