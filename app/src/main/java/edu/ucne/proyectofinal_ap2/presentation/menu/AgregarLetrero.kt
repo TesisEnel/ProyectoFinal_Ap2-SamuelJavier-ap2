@@ -20,8 +20,13 @@ import com.google.firebase.storage.ktx.storage
 import edu.ucne.proyectofinal_ap2.presentation.viewModels.LetreroViewModel
 import java.util.*
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.navigation.NavController
+
 @Composable
 fun AgregarLetreroScreen(
+    navController: NavController,
     viewModel: LetreroViewModel = hiltViewModel(),
     onLetreroAgregado: () -> Unit
 ) {
@@ -34,67 +39,82 @@ fun AgregarLetreroScreen(
         imagenUri = it
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
-        Text("Agregar Nuevo Letrero", style = MaterialTheme.typography.h6)
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = nombre,
-            onValueChange = { nombre = it },
-            label = { Text("Nombre del letrero") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = descripcion,
-            onValueChange = { descripcion = it },
-            label = { Text("Descripción") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Button(onClick = { launcher.launch("image/*") }) {
-            Text("Seleccionar imagen")
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        imagenUri?.let {
-            Image(
-                painter = rememberAsyncImagePainter(it),
-                contentDescription = null,
-                modifier = Modifier.size(200.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = {
-                if (nombre.isBlank() || descripcion.isBlank() || imagenUri == null) {
-                    Toast.makeText(context, "Completa todos los campos", Toast.LENGTH_LONG).show()
-                    return@Button
+    Column(modifier = Modifier.fillMaxSize()) {
+        TopAppBar(
+            title = { Text("Agregar Letrero") },
+            navigationIcon = {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Atrás")
                 }
+            }
+        )
 
-                viewModel.agregarLetrero(
-                    nombre,
-                    descripcion,
-                    imagenUri!!,
-                    context,
-                    onSuccess = {
-                        Toast.makeText(context, "Letrero guardado", Toast.LENGTH_LONG).show()
-                        onLetreroAgregado()
-                    },
-                    onError = { mensaje ->
-                        Toast.makeText(context, mensaje, Toast.LENGTH_LONG).show()
-                    }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp)
+        ) {
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = nombre,
+                onValueChange = { nombre = it },
+                label = { Text("Nombre del letrero") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = descripcion,
+                onValueChange = { descripcion = it },
+                label = { Text("Descripción") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(onClick = { launcher.launch("image/*") }) {
+                Text("Seleccionar imagen")
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            imagenUri?.let {
+                Image(
+                    painter = rememberAsyncImagePainter(it),
+                    contentDescription = null,
+                    modifier = Modifier.size(200.dp)
                 )
             }
-        ) {
-            Text("Guardar letrero")
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    if (nombre.isBlank() || descripcion.isBlank() || imagenUri == null) {
+                        Toast.makeText(context, "Completa todos los campos", Toast.LENGTH_LONG).show()
+                        return@Button
+                    }
+
+                    viewModel.agregarLetrero(
+                        nombre,
+                        descripcion,
+                        imagenUri!!,
+                        context,
+                        onSuccess = {
+                            Toast.makeText(context, "Letrero guardado", Toast.LENGTH_LONG).show()
+                            onLetreroAgregado()
+                        },
+                        onError = { mensaje ->
+                            Toast.makeText(context, mensaje, Toast.LENGTH_LONG).show()
+                        }
+                    )
+                }
+            ) {
+                Text("Guardar letrero")
+            }
         }
     }
 }
