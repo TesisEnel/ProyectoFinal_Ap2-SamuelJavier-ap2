@@ -57,6 +57,7 @@ dependencies {
 
 
     //optional
+    implementation ("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     implementation("androidx.compose.material3:material3:1.1.0-alpha02")
     implementation ("androidx.compose.material:material:1.4.0")
