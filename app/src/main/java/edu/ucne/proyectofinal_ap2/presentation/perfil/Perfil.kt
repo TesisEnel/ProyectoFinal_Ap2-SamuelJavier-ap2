@@ -80,8 +80,8 @@ fun PerfilScreen(viewModel: PerfilViewModel = viewModel(),  navController: NavHo
             userData?.let { usuario ->
                 Text("Nombre: ${usuario.nombre} ${usuario.apellido}")
                 Text("Correo: ${user?.email}")
-                Text("Teléfono: ${usuario.telefono}")
-                Text("Dirección: ${usuario.direccion}")
+                Text("Dirección: ${usuario.telefono}")
+                Text("Teléfono: ${usuario.direccion}")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
