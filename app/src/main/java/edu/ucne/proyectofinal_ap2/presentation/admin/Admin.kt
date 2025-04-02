@@ -1,4 +1,4 @@
-package edu.ucne.proyectofinal_ap2.presentation.menu
+package edu.ucne.proyectofinal_ap2.presentation.admin
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -20,8 +20,12 @@ import edu.ucne.proyectofinal_ap2.R
 @Composable
 fun AdminMenuScreen(
     onVerPedidosClick: () -> Unit,
+    onPerfilClick:() -> Unit,
     onOpcionesLetrero: () -> Unit,
-    onOpcionesMateriales: () -> Unit
+    onOpcionesMateriales: () -> Unit,
+    onVerUsuariosClick: () -> Unit,
+    onCerrarSesion: () -> Unit,
+
 ) {
     Column(
         modifier = Modifier
@@ -64,7 +68,28 @@ fun AdminMenuScreen(
                 )
             }
 
+            item {
+                AdminCard(
+                    titulo = "Usuarios",
+                    imagenRes = R.drawable.usuarios,
+                    onClick = onVerUsuariosClick
+                )
+            }
+            item {
+                AdminCard(
+                    titulo = "Perfil",
+                    imagenRes = R.drawable.perfil,
+                    onClick = onPerfilClick
+                )
+            }
 
+            item {
+                AdminCard(
+                    titulo = "Cerrar Sesión",
+                    imagenRes = R.drawable.logout,
+                    onClick = onCerrarSesion
+                )
+            }
         }
     }
 }
