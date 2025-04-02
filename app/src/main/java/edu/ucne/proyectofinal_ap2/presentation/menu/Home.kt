@@ -10,10 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.layout.*
-import androidx.compose.ui.graphics.Color
-import edu.ucne.proyectofinal_ap2.R
-import edu.ucne.proyectofinal_ap2.data.entities.Letrero
 import edu.ucne.proyectofinal_ap2.data.entities.Material
+import edu.ucne.proyectofinal_ap2.presentation.admin.AdminMenuScreen
 import edu.ucne.proyectofinal_ap2.presentation.clientes.ClienteMenuScreen
 import kotlinx.coroutines.launch
 
@@ -23,7 +21,6 @@ fun HomeScreen(
     isAdmin: Boolean = false,
     onVerPedidos: () -> Unit,
     onCrearPedido: () -> Unit,
-    onCerrarSesion: () -> Unit,
     onPerfilClick: () -> Unit,
     onMisPedidosClick: () -> Unit,
     onIrAPersonalizar: (Int) -> Unit,
@@ -32,7 +29,10 @@ fun HomeScreen(
     onOpcionesMateriales: () -> Unit,
     onMisPedidos: () -> Unit,
     onHacerPedidos: () -> Unit,
-    onCatalogo: () -> Unit
+    onCatalogo: () -> Unit,
+    onVerUsuariosClick: () -> Unit,
+    onCerrarSesion: () -> Unit,
+    onCuentaBanco: () -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -103,25 +103,24 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "¡Bienvenido, $userName!",
-                    fontSize = MaterialTheme.typography.h5.fontSize,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
                 if (isAdmin) {
                     AdminMenuScreen(
                         onVerPedidosClick = onVerPedidos,
-                        onOpcionesLetrero= onOpcionesLetrero,
-                        onOpcionesMateriales = onOpcionesMateriales
+                        onOpcionesLetrero = onOpcionesLetrero,
+                        onOpcionesMateriales = onOpcionesMateriales,
+                        onVerUsuariosClick = onVerUsuariosClick,
+                        onCerrarSesion = onCerrarSesion,
+                        onPerfilClick = onPerfilClick
                     )
                 } else {
                     ClienteMenuScreen(
                         onHacerPedido = onHacerPedidos,
                         onMisPedidos = onMisPedidos,
                         onPerfil = {},
-                        onCatalogo = onCatalogo
+                        onCatalogo = onCatalogo,
+                        onCerrarSesion = onCerrarSesion,
+                        onPerfilClick = onPerfilClick,
+                        onCuentaBanco = onCuentaBanco
                     )
                 }
             }
