@@ -8,7 +8,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -48,6 +50,7 @@ fun CrearPedidoScreen(
     var alto by remember { mutableStateOf("") }
     var ancho by remember { mutableStateOf("") }
     var precio by remember { mutableStateOf(0.0) }
+    var cantidadTexto by remember { mutableStateOf("") }
     var imagenUri by remember { mutableStateOf<Uri?>(null) }
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
@@ -78,6 +81,7 @@ fun CrearPedidoScreen(
                 .padding(innerPadding)
                 .padding(16.dp)
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ) {
             Text("Selecciona un material", fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(8.dp))
@@ -111,7 +115,8 @@ fun CrearPedidoScreen(
                                 medidaSeleccionada,
                                 alto,
                                 ancho,
-                                material.nombre
+                                material.nombre,
+                                if (cantidadTexto.isNotEmpty()) cantidadTexto.toInt() else 1
                             )
                         }) {
                             Text(text = material.nombre)
@@ -140,7 +145,8 @@ fun CrearPedidoScreen(
                                 medida,
                                 alto,
                                 ancho,
-                                materialSeleccionado?.nombre ?: ""
+                                materialSeleccionado?.nombre ?: "",
+                                if (cantidadTexto.isNotEmpty()) cantidadTexto.toInt() else 1
                             )
                         }
                     )
@@ -164,7 +170,8 @@ fun CrearPedidoScreen(
                                 medidaSeleccionada,
                                 alto,
                                 ancho,
-                                materialSeleccionado?.nombre ?: ""
+                                materialSeleccionado?.nombre ?: "",
+                                if (cantidadTexto.isNotEmpty()) cantidadTexto.toInt() else 1
                             )
                         },
                         label = { Text("Alto (cm)") },
@@ -182,7 +189,8 @@ fun CrearPedidoScreen(
                                 medidaSeleccionada,
                                 alto,
                                 ancho,
-                                materialSeleccionado?.nombre ?: ""
+                                materialSeleccionado?.nombre ?: "",
+                                if (cantidadTexto.isNotEmpty()) cantidadTexto.toInt() else 1
                             )
                         },
                         label = { Text("Ancho (cm)") },
@@ -190,6 +198,30 @@ fun CrearPedidoScreen(
                         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
                     )
                 }
+            }
+
+            Spacer(Modifier.height(16.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                OutlinedTextField(
+                    value = cantidadTexto,
+                    onValueChange = {
+                        if (it.all { char -> char.isDigit() }) {
+                            cantidadTexto = it
+                            if (cantidadTexto.isNotEmpty()) {
+                                precio = pedidoViewModel.calcularPrecioPedido(
+                                    medidaSeleccionada,
+                                    alto,
+                                    ancho,
+                                    materialSeleccionado?.nombre ?: "",
+                                    cantidadTexto.toInt()
+                                )
+                            }
+                        }
+                    },
+                    label = { Text("Cantidad") },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+                )
             }
 
             Spacer(Modifier.height(16.dp))
@@ -216,49 +248,42 @@ fun CrearPedidoScreen(
             Spacer(Modifier.height(24.dp))
             Button(
                 onClick = {
-                    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@Button
+                    val cantidadFinal = if (cantidadTexto.isBlank()) 1 else cantidadTexto.toInt()
+                    val userId = FirebaseAuth.getInstance().currentUser?.uid
 
-                    Firebase.firestore.collection("usuarios")
-                        .document(userId)
-                        .get()
-                        .addOnSuccessListener { doc ->
-                            val nombre = doc.getString("nombre") ?: ""
-                            val apellido = doc.getString("apellido") ?: ""
-                            val direccion = doc.getString("direccion") ?: ""
-                            val telefono = doc.getString("telefono") ?: ""
+                    if (userId != null && materialSeleccionado != null && medidaSeleccionada.isNotEmpty() && alto.isNotEmpty() && ancho.isNotEmpty()) {
+                        val pedido = Pedido(
+                            id = UUID.randomUUID().toString(),
+                            material = materialSeleccionado!!.nombre,
+                            medida = medidaSeleccionada,
+                            alto = alto,
+                            ancho = ancho,
+                            logoUrl = imagenUri?.toString() ?: "",
+                            precio = precio,
+                            cantidad = cantidadFinal,
+                            estado = "pendiente",
+                            fecha = System.currentTimeMillis(),
+                            nombre = "Nombre del usuario",
+                            apellido = "Apellido del usuario",
+                            telefono = "Número de teléfono",
+                            direccion = "Dirección del usuario"
+                        )
 
-                            val pedido = Pedido(
-                                id = UUID.randomUUID().toString(),
-                                nombre = nombre,
-                                apellido = apellido,
-                                direccion = direccion,
-                                telefono = telefono,
-                                material = materialSeleccionado?.nombre ?: "",
-                                medida = medidaSeleccionada,
-                                alto = alto,
-                                ancho = ancho,
-                                logoUrl = imagenUri?.toString() ?: "",
-                                precio = precio,
-                                estado = "pendiente",
-                                fecha = System.currentTimeMillis()
-                            )
-
-                            pedidoViewModel.guardarPedido(
-                                pedido,
-                                onSuccess = {
-                                    Toast.makeText(context, "Pedido guardado con éxito", Toast.LENGTH_SHORT).show()
-                                    navHostController.navigate(Screen.PagoInstruccionScreen.route)
-                                },
-                                onError = {
-                                    Toast.makeText(context, "Error al guardar: $it", Toast.LENGTH_SHORT).show()
-                                }
-                            )
-                        }
-                        .addOnFailureListener {
-                            Toast.makeText(context, "Error al obtener datos del cliente", Toast.LENGTH_SHORT).show()
-                        }
+                        pedidoViewModel.guardarPedido(
+                            pedido,
+                            onSuccess = {
+                                Toast.makeText(context, "Pedido guardado con éxito", Toast.LENGTH_SHORT).show()
+                                navHostController.navigate(Screen.PagoInstruccionScreen.route)
+                            },
+                            onError = { error ->
+                                Toast.makeText(context, "Error al guardar: $error", Toast.LENGTH_SHORT).show()
+                            }
+                        )
+                    } else {
+                        Toast.makeText(context, "Por favor completa todos los campos requeridos.", Toast.LENGTH_SHORT).show()
+                    }
                 },
-                enabled = materialSeleccionado != null
+                enabled = materialSeleccionado != null && cantidadTexto.isNotEmpty() && alto.isNotEmpty() && ancho.isNotEmpty()
             ) {
                 Text("Confirmar pedido")
             }
