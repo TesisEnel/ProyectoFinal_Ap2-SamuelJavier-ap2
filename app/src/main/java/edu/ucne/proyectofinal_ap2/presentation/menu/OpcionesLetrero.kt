@@ -6,8 +6,14 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.Card
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,11 +21,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import edu.ucne.proyectofinal_ap2.R
 
 
 @Composable
 fun OpcionesLetreroScreen(
+    navController: NavController,
     onAgregarClick: () -> Unit,
     onEditarClick: () -> Unit,
     onEliminarClick: () -> Unit
@@ -27,42 +35,50 @@ fun OpcionesLetreroScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
     ) {
-        Text(
-            text = "Opciones de Letreros",
-            style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(bottom = 16.dp)
+        TopAppBar(
+            title = { Text("Opciones de Letreros") },
+            navigationIcon = {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Atrás")
+                }
+            }
         )
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxSize()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
-            item {
-                OpcionCard(
-                    titulo = "Agregar Letrero",
-                    imagenRes = R.drawable.agregar,
-                    onClick = onAgregarClick
-                )
-            }
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                item {
+                    OpcionCard(
+                        titulo = "Agregar Letrero",
+                        imagenRes = R.drawable.agregar,
+                        onClick = onAgregarClick
+                    )
+                }
 
-            item {
-                OpcionCard(
-                    titulo = "Editar Letrero",
-                    imagenRes = R.drawable.editar,
-                    onClick = onEditarClick
-                )
-            }
+                item {
+                    OpcionCard(
+                        titulo = "Editar Letrero",
+                        imagenRes = R.drawable.editar,
+                        onClick = onEditarClick
+                    )
+                }
 
-            item {
-                OpcionCard(
-                    titulo = "Eliminar Letrero",
-                    imagenRes = R.drawable.eliminar,
-                    onClick = onEliminarClick
-                )
+                item {
+                    OpcionCard(
+                        titulo = "Eliminar Letrero",
+                        imagenRes = R.drawable.eliminar,
+                        onClick = onEliminarClick
+                    )
+                }
             }
         }
     }
