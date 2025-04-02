@@ -27,9 +27,6 @@ fun ListaPedidosAdminScreen(
 
     val pedidos by pedidoViewModel.pedidos.collectAsState(initial = emptyList())
     var estadoSeleccionado by remember { mutableStateOf("pendiente") }
-
-    val pedidosFiltrados = pedidos.filter { it.estado == estadoSeleccionado }
-
     val estados = listOf("pendiente", "aceptado", "rechazado", "listo")
 
     Scaffold(
@@ -55,57 +52,58 @@ fun ListaPedidosAdminScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 items(estados.size) { index ->
-                    val estado = estados[index]
                     Button(
-                        onClick = { estadoSeleccionado = estado },
+                        onClick = { estadoSeleccionado = estados[index] },
                         colors = ButtonDefaults.buttonColors(
-                            backgroundColor = if (estadoSeleccionado == estado)
+                            backgroundColor = if (estadoSeleccionado == estados[index])
                                 MaterialTheme.colors.primary
                             else MaterialTheme.colors.surface
                         )
                     ) {
-                        Text(
-                            text = estado.replaceFirstChar { it.uppercaseChar() }
-                        )
+                        Text(estados[index])
                     }
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            if (pedidosFiltrados.isEmpty()) {
-                Text("No hay pedidos $estadoSeleccionado.")
-            } else {
-                pedidosFiltrados.forEach { pedido ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        elevation = 4.dp
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text("Material: ${pedido.material}")
-                            Text("Medida: ${pedido.medida} (${pedido.alto}cm x ${pedido.ancho}cm)")
-                            Text("Precio: RD$${pedido.precio}")
-                            Text("Estado: ${pedido.estado}")
+            pedidos.filter { it.estado == estadoSeleccionado }.forEach { pedido ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    elevation = 4.dp
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("Material: ${pedido.material}")
+                        Text("Medida: ${pedido.medida} (${pedido.alto}cm x ${pedido.ancho}cm)")
+                        Text("Cantidad: ${pedido.cantidad}")
+                        Text("Precio: RD$${pedido.precio}")
+                        Text("Estado: ${pedido.estado}")
+                        Text("Cliente: ${pedido.nombre} ${pedido.apellido}")
+                        Text("- Teléfono: ${pedido.telefono}")
+                        Text("- Dirección: ${pedido.direccion}")
+                        Text("- Mensaje: ${pedido.mensaje}")
+
+                        pedido.fecha?.let {
+                            val fecha = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(it))
+                            Text("Fecha del pedido: $fecha")
+                        } ?: Text("Fecha: No disponible")
+
+                        if (estadoSeleccionado == "pendiente" || estadoSeleccionado == "aceptado") {
+                            var mensaje by remember { mutableStateOf(pedido.mensaje ?: "") }
+                            TextField(
+                                value = mensaje,
+                                onValueChange = { mensaje = it },
+                                label = { Text("Mensaje al cliente") }
+                            )
+
                             Spacer(modifier = Modifier.height(8.dp))
-
-                            Text("Cliente:")
-                            Text("- Nombre: ${pedido.nombre} ${pedido.apellido}")
-                            Text("- Teléfono: ${pedido.telefono}")
-                            Text("- Dirección: ${pedido.direccion}")
-
-                            pedido.fecha?.let {
-                                val fecha = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(it))
-                                Text("Fecha del pedido: $fecha")
-                            } ?: Text("Fecha: No disponible")
-
                             if (estadoSeleccionado == "pendiente") {
-                                Spacer(modifier = Modifier.height(8.dp))
                                 Row(horizontalArrangement = Arrangement.SpaceBetween) {
                                     Button(
                                         onClick = {
-                                            pedidoViewModel.cambiarEstadoPedido(pedido.id, "aceptado")
+                                            pedidoViewModel.cambiarEstadoPedido(pedido.id, "aceptado", mensaje)
                                         }
                                     ) {
                                         Text("Aceptar")
@@ -113,20 +111,17 @@ fun ListaPedidosAdminScreen(
                                     Spacer(modifier = Modifier.width(16.dp))
                                     Button(
                                         onClick = {
-                                            pedidoViewModel.cambiarEstadoPedido(pedido.id, "rechazado")
+                                            pedidoViewModel.cambiarEstadoPedido(pedido.id, "rechazado", mensaje)
                                         },
                                         colors = ButtonDefaults.buttonColors(MaterialTheme.colors.error)
                                     ) {
                                         Text("Rechazar")
                                     }
                                 }
-                            }
-
-                            if (estadoSeleccionado == "aceptado") {
-                                Spacer(modifier = Modifier.height(8.dp))
+                            } else if (estadoSeleccionado == "aceptado") {
                                 Button(
                                     onClick = {
-                                        pedidoViewModel.cambiarEstadoPedido(pedido.id, "listo")
+                                        pedidoViewModel.cambiarEstadoPedido(pedido.id, "listo", mensaje)
                                     },
                                     colors = ButtonDefaults.buttonColors(MaterialTheme.colors.secondary)
                                 ) {
