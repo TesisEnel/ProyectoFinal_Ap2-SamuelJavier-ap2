@@ -14,6 +14,8 @@ data class Pedido(
     val nombre: String = "",
     val apellido: String = "",
     val telefono: String = "",
-    val direccion: String = ""
+    val direccion: String = "",
+    val cantidad: Int = 1,
+    var mensaje: String = ""
 )
 
