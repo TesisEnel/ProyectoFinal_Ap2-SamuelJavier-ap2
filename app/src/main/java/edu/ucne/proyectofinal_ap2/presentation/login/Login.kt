@@ -22,96 +22,134 @@ import androidx.compose.ui.unit.sp
 import edu.ucne.proyectofinal_ap2.R
 import androidx.activity.compose.BackHandler
 import android.app.Activity
+import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.ui.layout.ContentScale
 
 @Composable
 fun LoginScreen(
     onLoginClick: (email: String, password: String) -> Unit,
     onGoToRegister: () -> Unit
 ) {
-
     val context = LocalContext.current
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
     val activity = LocalContext.current as? Activity
 
-
-    val customFont = FontFamily.SansSerif
-
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(32.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(Color.Black)
     ) {
+        // Colocar la imagen de forma que actúe como un acento en lugar de dominar toda la pantalla
         Image(
-            painter = painterResource(id = R.drawable.easysignlogo),
-            contentDescription = "Logo EasySign",
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "Background Image",
+            contentScale = ContentScale.Fit, // Ajusta la imagen proporcionalmente
             modifier = Modifier
-                .height(300.dp)
-                .padding(bottom = 10.dp)
+                .size(200.dp) // Ajusta el tamaño según lo necesario
+                .align(Alignment.TopCenter) // Posicionar en la parte superior central
+                .offset(y = 50.dp)
         )
 
-        Text(
-            text = "Iniciar Sesión",
-            fontSize = 26.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = customFont,
-            modifier = Modifier.padding(bottom = 32.dp)
-        )
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Correo electrónico") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Contraseña") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = {
-                if (email.isBlank() || password.isBlank()) {
-                    Toast.makeText(context, "Completa todos los campos", Toast.LENGTH_LONG).show()
-                } else {
-                    onLoginClick(email, password)
-                }
-            },
+        // Fondo blanco con esquina redondeada y contenido del login
+        Box(
             modifier = Modifier
+                .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .height(50.dp),
-            shape = RoundedCornerShape(12.dp)
+                .heightIn(min = 500.dp)
+                .background(
+                    color = Color.White,
+                    shape = RoundedCornerShape(topStart = 75.dp)
+                )
+                .padding(horizontal = 24.dp, vertical = 20.dp)
         ) {
-            Text("Ingresar")
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Login",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Email field
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email") },
+                    singleLine = true,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        textColor = Color.Black,
+                        focusedBorderColor = Color.Black,
+                        focusedLabelColor = Color.Black,  // Label color when the TextField is focused
+                        unfocusedLabelColor = Color.Black,// Borde negro cuando está enfocado
+                        unfocusedBorderColor = Color.Gray  // Borde gris cuando no está enfocado
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(32.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Password field
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Password") },
+                    singleLine = true,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        textColor = Color.Black,
+                        focusedBorderColor = Color.Black, // Borde negro cuando está enfocado
+                        unfocusedBorderColor = Color.Gray,
+                        focusedLabelColor = Color.Black,  // Label color when the TextField is focused
+                        unfocusedLabelColor = Color.Black// Borde gris cuando no está enfocado
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(32.dp)
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Login button
+                Button(
+                    onClick = {
+                        if (email.isBlank() || password.isBlank()) {
+                            Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_LONG).show()
+                        } else {
+                            onLoginClick(email, password)
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.Black,
+                        contentColor = Color.White),
+                    shape = RoundedCornerShape(32.dp)
+                ) {
+                    Text("Login", color = Color.White)
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Don't have any account? Sign Up",
+                    color = Color.Gray,
+                    modifier = Modifier.clickable { onGoToRegister() }
+                )
+            }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "¿No tienes cuenta? Regístrate aquí",
-            color = MaterialTheme.colors.primary,
-            modifier = Modifier.clickable { onGoToRegister() },
-            textAlign = TextAlign.Center
-        )
     }
-    BackHandler {
-        activity?.finish()
-    }
+    BackHandler { activity?.finish() }
 }
+
