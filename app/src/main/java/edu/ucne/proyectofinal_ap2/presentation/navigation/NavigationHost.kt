@@ -143,7 +143,8 @@ fun AppNavHost(navHostController: NavHostController) {
                 },
                 onGoToLogin = {
                     navHostController.popBackStack()
-                }
+                },
+                onBack = {navHostController.popBackStack()}
             )
         }
 

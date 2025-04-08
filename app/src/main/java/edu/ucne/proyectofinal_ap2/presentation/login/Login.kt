@@ -53,7 +53,7 @@ fun LoginScreen(
             contentDescription = "Background Image",
             contentScale = ContentScale.Fit, // Ajusta la imagen proporcionalmente
             modifier = Modifier
-                .size(200.dp) // Ajusta el tamaño según lo necesario
+                .size(275.dp) // Ajusta el tamaño según lo necesario
                 .align(Alignment.TopCenter) // Posicionar en la parte superior central
                 .offset(y = 50.dp)
         )
