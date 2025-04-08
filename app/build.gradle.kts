@@ -63,10 +63,12 @@ dependencies {
     implementation ("androidx.compose.material:material:1.4.0")
     implementation("androidx.compose.material:material:1.5.4")
     implementation("androidx.compose.material:material:1.3.1") // Usa la última versión
+    implementation("androidx.compose.material:material:1.7.8")
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-auth")
     implementation ("com.google.firebase:firebase-bom:32.7.3")
+
     // Firebase Auth
     implementation("com.google.firebase:firebase-auth-ktx:22.3.1")
     // Core de Firebase

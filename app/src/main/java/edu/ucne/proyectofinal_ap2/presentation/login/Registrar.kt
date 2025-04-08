@@ -60,7 +60,7 @@ fun RegisterScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)  // Adjust the height of the black bar
+                .height(50.dp)
                 .background(Color.Black),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -74,13 +74,13 @@ fun RegisterScreen(
                     tint = Color.White
                 )
             }
-            Spacer(modifier = Modifier.width(110.dp)) // Adjust spacing based on your needs
+            Spacer(modifier = Modifier.width(110.dp))
             Text(
-                text = "Sign Up",
+                text = "Registrarse",
                 color = Color.White,
-                fontSize = 18.sp, // Adjust the font size if needed
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(start = 8.dp)  // Ensure some padding after the icon
+                modifier = Modifier.padding(start = 8.dp)
             )
         }
 
@@ -88,10 +88,10 @@ fun RegisterScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .height(780.dp)  // Increase the height of the white box
+                .height(780.dp)
                 .background(
                     color = Color.White,
-                    shape = RoundedCornerShape(topStart = 50.dp)  // Smoother curve
+                    shape = RoundedCornerShape(topStart = 50.dp)
                 )
                 .verticalScroll(rememberScrollState())
                 .padding(24.dp),
@@ -103,34 +103,66 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = nombre,
                 onValueChange = { nombre = it },
-                label = { Text("First name") },
+                label = { Text("Nombre") },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    textColor = Color.Black,
+                    focusedBorderColor = Color.Black,
+                    focusedLabelColor = Color.Black,
+                    unfocusedLabelColor = Color.Black,
+                    unfocusedBorderColor = Color.Gray
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(32.dp)
             )
 
             OutlinedTextField(
                 value = apellido,
                 onValueChange = { apellido = it },
-                label = { Text("Last name") },
+                label = { Text("Apellido") },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    textColor = Color.Black,
+                    focusedBorderColor = Color.Black,
+                    focusedLabelColor = Color.Black,
+                    unfocusedLabelColor = Color.Black,
+                    unfocusedBorderColor = Color.Gray
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(32.dp)
             )
 
             OutlinedTextField(
                 value = direccion,
                 onValueChange = { direccion = it },
-                label = { Text("Address") },
+                label = { Text("Direccion") },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    textColor = Color.Black,
+                    focusedBorderColor = Color.Black,
+                    focusedLabelColor = Color.Black,
+                    unfocusedLabelColor = Color.Black,
+                    unfocusedBorderColor = Color.Gray
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(32.dp)
             )
 
             OutlinedTextField(
                 value = telefono,
                 onValueChange = { telefono = it },
-                label = { Text("Phone") },
+                label = { Text("Telefono") },
                 singleLine = true,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    textColor = Color.Black,
+                    focusedBorderColor = Color.Black,
+                    focusedLabelColor = Color.Black,
+                    unfocusedLabelColor = Color.Black,
+                    unfocusedBorderColor = Color.Gray
+                ),
                 modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone)
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
+                shape = RoundedCornerShape(32.dp)
             )
 
             OutlinedTextField(
@@ -138,42 +170,66 @@ fun RegisterScreen(
                 onValueChange = { email = it },
                 label = { Text("Email") },
                 singleLine = true,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    textColor = Color.Black,
+                    focusedBorderColor = Color.Black,
+                    focusedLabelColor = Color.Black,
+                    unfocusedLabelColor = Color.Black,
+                    unfocusedBorderColor = Color.Gray
+                ),
                 modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email)
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
+                shape = RoundedCornerShape(32.dp)
             )
 
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Password") },
+                label = { Text("Contrasena") },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    textColor = Color.Black,
+                    focusedBorderColor = Color.Black,
+                    focusedLabelColor = Color.Black,
+                    unfocusedLabelColor = Color.Black,
+                    unfocusedBorderColor = Color.Gray
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(32.dp)
             )
 
             OutlinedTextField(
                 value = confirmPassword,
                 onValueChange = { confirmPassword = it },
-                label = { Text("Confirm password") },
+                label = { Text("Confirmar Contrasena") },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    textColor = Color.Black,
+                    focusedBorderColor = Color.Black,
+                    focusedLabelColor = Color.Black,
+                    unfocusedLabelColor = Color.Black,
+                    unfocusedBorderColor = Color.Gray
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(32.dp)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text("Select your role", fontWeight = FontWeight.SemiBold)
+            Text("Selecciona tu Rol", fontWeight = FontWeight.SemiBold)
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
                     selected = rol == "cliente",
                     onClick = { rol = "cliente" }
                 )
-                Text("Customer")
+                Text("Cliente")
                 Spacer(modifier = Modifier.width(16.dp))
                 RadioButton(
                     selected = rol == "admin",
                     onClick = { rol = "admin" }
                 )
-                Text("Administrator")
+                Text("Admin")
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -185,21 +241,22 @@ fun RegisterScreen(
                         telefono.isBlank() || email.isBlank() || password.isBlank() ||
                         confirmPassword.isBlank() || password != confirmPassword
                     ) {
-                        Toast.makeText(context, "Please complete all fields and ensure passwords match", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, "Todos los Campos son obligatorios.", Toast.LENGTH_LONG).show()
                     } else {
                         onRegisterClick(nombre, apellido, direccion, telefono, email, password, rol)
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(50.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black)
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black),
+                shape = RoundedCornerShape(32.dp)
             ) {
-                Text("Register", color = Color.White)
+                Text("Registrar", color = Color.White)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Already have an account? Sign In",
+                text = "Ya tienes una cuenta? Inicia Sesion",
                 color = Color.Gray,
                 modifier = Modifier.clickable(onClick = onGoToLogin),
                 textAlign = TextAlign.Center

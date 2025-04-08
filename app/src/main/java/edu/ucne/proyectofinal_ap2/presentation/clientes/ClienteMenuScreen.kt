@@ -1,22 +1,21 @@
 package edu.ucne.proyectofinal_ap2.presentation.clientes
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import edu.ucne.proyectofinal_ap2.R
-import edu.ucne.proyectofinal_ap2.presentation.admin.AdminCard
+import edu.ucne.proyectofinal_ap2.presentation.menu.OpcionCard
+import kotlinx.coroutines.launch
 
 @Composable
 fun ClienteMenuScreen(
@@ -28,88 +27,96 @@ fun ClienteMenuScreen(
     onPerfilClick: () -> Unit,
     onCuentaBanco: () -> Unit
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Menu") }
-            )
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(16.dp)
-                .fillMaxSize()
-        ) {
-            Text(
-                text = "Panel Cliente",
-                style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    ModalDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            DrawerContent { scope.launch { drawerState.close() } }
+        },
+        content = {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black)
+                )
+
+                Column {
+                    Spacer(modifier = Modifier.height(100.dp))
 
 
-
-
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-
-                item {
-                    OpcionCard("Ver Catálogo", R.drawable.catalogo) { onCatalogo() }
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
+                            .background(Color.White)
+                    ) {
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            item { OpcionCard("Catalogo", R.drawable.catalogo) { onCatalogo() } }
+                            item { OpcionCard("Mis Pedidos", R.drawable.pedido) { onMisPedidos() } }
+                            item { OpcionCard("Cuenta Banco", R.drawable.cuentabanco) { onCuentaBanco() } }
+                        }
+                    }
                 }
 
-                item {
-                    OpcionCard("Mis Pedidos", R.drawable.pedido) { onMisPedidos() }
+                TopAppBar(
+                    backgroundColor = Color.Black,
+                    contentColor = Color.White,
+                    elevation = 0.dp,
+                    modifier = Modifier.height(56.dp)
+                ) {
+                    IconButton(onClick = { scope.launch { if (drawerState.isClosed) drawerState.open() else drawerState.close() } }) {
+                        Icon(Icons.Filled.Menu, contentDescription = "Menu", tint = Color.White)
+                    }
+                    Spacer(Modifier.weight(1f, true))
+                    IconButton(onClick = {  }) {
+                        Icon(Icons.Filled.Notifications, contentDescription = "Notifications", tint = Color.White)
+                    }
                 }
 
-                item {
-                    OpcionCard("Hacer Pedido", R.drawable.editar) { onHacerPedido() }
-                }
-                item {
-                    OpcionCard("Cuenta Banco", R.drawable.cuentabanco) { onCuentaBanco() }
-                }
-
-                item {
-                    OpcionCard("Perfil", R.drawable.perfil) { onPerfilClick() }
-                }
-
-                item {
-                    OpcionCard("Cerrar Sesión", R.drawable.logout) { onCerrarSesion() }
+                BottomAppBar(
+                    backgroundColor = Color.Black,
+                    contentColor = Color.White,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .height(70.dp)
+                        .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+                ) {
+                    IconButton(onClick = { onHacerPedido() }) {
+                        Icon(Icons.Filled.Home, contentDescription = "Home", tint = Color.White)
+                    }
+                    Spacer(Modifier.weight(1f, true))
+                    IconButton(onClick = { onHacerPedido() }) {
+                        Icon(Icons.Filled.List, contentDescription = "Make Order", tint = Color.White)
+                    }
+                    Spacer(Modifier.weight(1f, true))
+                    IconButton(onClick = { onHacerPedido() }) {
+                        Icon(Icons.Filled.Person, contentDescription = "Make Order", tint = Color.White)
+                    }
+                    Spacer(Modifier.weight(1f, true))
+                    IconButton(onClick = { onCerrarSesion() }) {
+                        Icon(Icons.Filled.ExitToApp, contentDescription = "Log Out", tint = Color.White)
+                    }
                 }
             }
         }
-    }
-    }
-
-
+    )
+}
 
 @Composable
-fun OpcionCard(titulo: String, imagenRes: Int, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(1f)
-            .clickable { onClick() },
-        elevation = 6.dp
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(12.dp)
-        ) {
-            Image(
-                painter = painterResource(id = imagenRes),
-                contentDescription = titulo,
-                modifier = Modifier.size(100.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = titulo,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
+fun DrawerContent(onClose: () -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+        Text("Home", modifier = Modifier.padding(8.dp), style = MaterialTheme.typography.h6)
+        Text("Profile", modifier = Modifier.padding(8.dp), style = MaterialTheme.typography.h6)
+        Text("Settings", modifier = Modifier.padding(8.dp), style = MaterialTheme.typography.h6)
     }
 }
