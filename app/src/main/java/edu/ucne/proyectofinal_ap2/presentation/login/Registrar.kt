@@ -1,8 +1,10 @@
 package edu.ucne.proyectofinal_ap2.presentation.login
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -44,137 +46,161 @@ fun RegisterScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(32.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(Color.White)
     ) {
-        Text(
-            text = "Crear cuenta",
-            fontSize = 26.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 24.dp)
-        )
-
-        OutlinedTextField(
-            value = nombre,
-            onValueChange = { nombre = it },
-            label = { Text("Nombre") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = apellido,
-            onValueChange = { apellido = it },
-            label = { Text("Apellido") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = direccion,
-            onValueChange = { direccion = it },
-            label = { Text("Dirección") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = telefono,
-            onValueChange = { telefono = it },
-            label = { Text("Teléfono") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Correo electrónico") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Contraseña") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = confirmPassword,
-            onValueChange = { confirmPassword = it },
-            label = { Text("Confirmar contraseña") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text("Selecciona tu rol", fontWeight = FontWeight.SemiBold)
-
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            RadioButton(
-                selected = rol == "cliente",
-                onClick = { rol = "cliente" }
-            )
-            Text("Cliente")
-            Spacer(modifier = Modifier.width(16.dp))
-            RadioButton(
-                selected = rol == "admin",
-                onClick = { rol = "admin" }
-            )
-            Text("Administrador")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = {
-                if (
-                    nombre.isBlank() || apellido.isBlank() || direccion.isBlank() ||
-                    telefono.isBlank() || email.isBlank() || password.isBlank() ||
-                    confirmPassword.isBlank()
-                ) {
-                    Toast.makeText(context, "Por favor, completa todos los campos", Toast.LENGTH_LONG).show()
-                } else if (password != confirmPassword) {
-                    Toast.makeText(context, "Las contraseñas no coinciden", Toast.LENGTH_LONG).show()
-                } else {
-                    onRegisterClick(nombre, apellido, direccion, telefono, email, password, rol)
-                }
-            },
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
+                .height(100.dp)  // Altura de la tarjeta negra
+                .background(Color.Black)
         ) {
-            Text("Registrarse")
+            Text(
+                text = "Sign Up",
+                color = Color.White,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.align(Alignment.Center)
+            )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(20.dp))  // Espacio entre la tarjeta negra y la blanca
 
-        Text(
-            text = "¿Ya tienes cuenta? Inicia sesión",
-            color = MaterialTheme.colors.primary,
-            modifier = Modifier.clickable { onGoToLogin() },
-            textAlign = TextAlign.Center
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp)
+                .background(
+                    color = Color.White,
+                    shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)  // Esquinas redondeadas
+                )
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                OutlinedTextField(
+                    value = nombre,
+                    onValueChange = { nombre = it },
+                    label = { Text("First name") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = apellido,
+                    onValueChange = { apellido = it },
+                    label = { Text("Last name") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = direccion,
+                    onValueChange = { direccion = it },
+                    label = { Text("Address") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = telefono,
+                    onValueChange = { telefono = it },
+                    label = { Text("Phone") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Password") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = confirmPassword,
+                    onValueChange = { confirmPassword = it },
+                    label = { Text("Confirm password") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text("Select your role", fontWeight = FontWeight.SemiBold)
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = rol == "cliente",
+                        onClick = { rol = "cliente" }
+                    )
+                    Text("Customer")
+                    Spacer(modifier = Modifier.width(16.dp))
+                    RadioButton(
+                        selected = rol == "admin",
+                        onClick = { rol = "admin" }
+                    )
+                    Text("Administrator")
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        if (
+                            nombre.isBlank() || apellido.isBlank() || direccion.isBlank() ||
+                            telefono.isBlank() || email.isBlank() || password.isBlank() ||
+                            confirmPassword.isBlank()
+                        ) {
+                            Toast.makeText(context, "Please complete all fields", Toast.LENGTH_LONG).show()
+                        } else if (password != confirmPassword) {
+                            Toast.makeText(context, "Passwords do not match", Toast.LENGTH_LONG).show()
+                        } else {
+                            onRegisterClick(nombre, apellido, direccion, telefono, email, password, rol)
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth().height(50.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black)
+                ) {
+                    Text("Register", color = Color.White)
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Already have an account? Sign In",
+                    color = MaterialTheme.colors.primary,
+                    modifier = Modifier.clickable { onGoToLogin() },
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
     }
 }

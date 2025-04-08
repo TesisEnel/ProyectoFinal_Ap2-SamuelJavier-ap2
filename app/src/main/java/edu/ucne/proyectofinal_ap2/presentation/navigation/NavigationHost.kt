@@ -173,12 +173,12 @@ fun AppNavHost(navHostController: NavHostController) {
 
         composable(Screen.EditarLetreroScreen.route) {
             EditarLetreroScreen(
-      navController= navHostController
+                navController= navHostController
             )
         }
         composable(Screen.EliminarLetreroScreen.route) {
             EliminarLetreroScreen(
-navController = navHostController
+                navController = navHostController
             )
         }
 
@@ -228,12 +228,12 @@ navController = navHostController
                 },
                 onMaterialClick = { material ->
                     navHostController.navigate(
-                       Screen.DetalleMaterialScreen.createRoute(
-                           nombre = material.nombre,
-                           descripcion = material.descripcion,
-                           imagenUrl = material.imagenUrl,
-                           precioCm2 = material.precioCm2
-                       )
+                        Screen.DetalleMaterialScreen.createRoute(
+                            nombre = material.nombre,
+                            descripcion = material.descripcion,
+                            imagenUrl = material.imagenUrl,
+                            precioCm2 = material.precioCm2
+                        )
 
                     )
                 },
@@ -262,7 +262,7 @@ navController = navHostController
 
         composable(Screen.EditarMaterialesScreen.route) {
             EditarMaterialScreen(
-                  navController = navHostController
+                navController = navHostController
             )
         }
 
@@ -321,7 +321,7 @@ navController = navHostController
 
         composable(Screen.PersonalizarPedidoScreen.route) {
             PersonalizarPedidoScreen(
-            letreroId = 1,
+                letreroId = 1,
                 onPedidoConfirmado = {navHostController.popBackStack()}
             )
         }
