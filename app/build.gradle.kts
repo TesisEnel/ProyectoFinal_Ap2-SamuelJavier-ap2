@@ -68,6 +68,8 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-auth")
     implementation ("com.google.firebase:firebase-bom:32.7.3")
+    implementation ("androidx.compose.material:material-icons-core:1.3.1")
+    implementation ("androidx.compose.material:material-icons-extended:1.7.8")
 
     // Firebase Auth
     implementation("com.google.firebase:firebase-auth-ktx:22.3.1")
