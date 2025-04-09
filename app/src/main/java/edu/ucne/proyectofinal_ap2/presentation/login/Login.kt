@@ -28,9 +28,13 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.input.KeyboardType
 
 @Composable
 fun LoginScreen(
@@ -40,6 +44,11 @@ fun LoginScreen(
     val context = LocalContext.current
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
+
+    var emailError by remember { mutableStateOf(false) }
+    var passwordError by remember { mutableStateOf(false) }
+
     val activity = LocalContext.current as? Activity
 
     Box(
@@ -47,18 +56,16 @@ fun LoginScreen(
             .fillMaxSize()
             .background(Color.Black)
     ) {
-        // Colocar la imagen de forma que actúe como un acento en lugar de dominar toda la pantalla
         Image(
             painter = painterResource(id = R.drawable.logo),
-            contentDescription = "Background Image",
-            contentScale = ContentScale.Fit, // Ajusta la imagen proporcionalmente
+            contentDescription = "Logo",
+            contentScale = ContentScale.Fit,
             modifier = Modifier
-                .size(275.dp) // Ajusta el tamaño según lo necesario
-                .align(Alignment.TopCenter) // Posicionar en la parte superior central
+                .size(275.dp)
+                .align(Alignment.TopCenter)
                 .offset(y = 50.dp)
         )
 
-        // Fondo blanco con esquina redondeada y contenido del login
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -84,57 +91,82 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Email field
                 OutlinedTextField(
                     value = email,
-                    onValueChange = { email = it },
+                    onValueChange = {
+                        email = it
+                        if (it.isNotBlank()) emailError = false
+                    },
                     label = { Text("Email") },
+                    isError = emailError,
                     singleLine = true,
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         textColor = Color.Black,
                         focusedBorderColor = Color.Black,
-                        focusedLabelColor = Color.Black,  // Label color when the TextField is focused
-                        unfocusedLabelColor = Color.Black,// Borde negro cuando está enfocado
-                        unfocusedBorderColor = Color.Gray  // Borde gris cuando no está enfocado
+                        focusedLabelColor = Color.Black,
+                        unfocusedLabelColor = Color.Black,
+                        unfocusedBorderColor = Color.Gray
                     ),
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(32.dp)
                 )
+                if (emailError) {
+                    Text("Debes ingresar tu email", color = Color.Red, fontSize = 12.sp)
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Password field
                 OutlinedTextField(
                     value = password,
-                    onValueChange = { password = it },
+                    onValueChange = {
+                        password = it
+                        if (it.isNotBlank()) passwordError = false
+                    },
                     label = { Text("Password") },
+                    isError = passwordError,
                     singleLine = true,
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    trailingIcon = {
+                        val icon = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                        val description = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña"
+
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            Icon(imageVector = icon, contentDescription = description)
+                        }
+                    },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         textColor = Color.Black,
-                        focusedBorderColor = Color.Black, // Borde negro cuando está enfocado
+                        focusedBorderColor = Color.Black,
                         unfocusedBorderColor = Color.Gray,
-                        focusedLabelColor = Color.Black,  // Label color when the TextField is focused
-                        unfocusedLabelColor = Color.Black// Borde gris cuando no está enfocado
+                        focusedLabelColor = Color.Black,
+                        unfocusedLabelColor = Color.Black
                     ),
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(32.dp)
                 )
+                if (passwordError) {
+                    Text("Debes ingresar tu contraseña", color = Color.Red, fontSize = 12.sp)
+                }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Login button
                 Button(
                     onClick = {
-                        if (email.isBlank() || password.isBlank()) {
-                            Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_LONG).show()
-                        } else {
+                        emailError = email.isBlank()
+                        passwordError = password.isBlank()
+
+                        if (!emailError && !passwordError) {
                             onLoginClick(email, password)
+                        } else {
+                            Toast.makeText(context, "Completa todos los campos", Toast.LENGTH_LONG).show()
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color.Black,
-                        contentColor = Color.White),
+                        backgroundColor = Color.Blue,
+                        contentColor = Color.White
+                    ),
                     shape = RoundedCornerShape(32.dp)
                 ) {
                     Text("Login", color = Color.White)
@@ -143,13 +175,14 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "Don't have any account? Sign Up",
+                    text = "¿No tienes una cuenta? Crea una",
                     color = Color.Gray,
                     modifier = Modifier.clickable { onGoToRegister() }
                 )
             }
         }
     }
+
     BackHandler { activity?.finish() }
 }
 
