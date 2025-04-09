@@ -112,7 +112,7 @@ class PedidoViewModel @Inject constructor() : ViewModel() {
         }
 
         val area = alto * ancho
-        return area / 144 * precioCm2 * cantidad
+        return area * precioCm2 * cantidad
     }
 
     fun guardarPedido(pedido: Pedido, onSuccess: () -> Unit, onError: (String) -> Unit) {

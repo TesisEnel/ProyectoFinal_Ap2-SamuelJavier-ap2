@@ -324,11 +324,11 @@ fun CrearPedidoScreen(
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF4CAF50)),
                     shape = RoundedCornerShape(32.dp),
                     enabled = materialSeleccionado != null && cantidadTexto.isNotEmpty() && alto.isNotEmpty() && ancho.isNotEmpty()
                 ) {
-                    Text("Confirmar pedido", color = Color(0xFF4CAF50))
+                    Text("Confirmar pedido", color = Color.White)
                 }
 
                 Button(
