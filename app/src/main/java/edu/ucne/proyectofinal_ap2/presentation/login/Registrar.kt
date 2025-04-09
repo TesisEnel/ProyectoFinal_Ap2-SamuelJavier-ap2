@@ -52,6 +52,14 @@ fun RegisterScreen(
     var confirmPassword by remember { mutableStateOf("") }
     var rol by remember { mutableStateOf("cliente") }
 
+    var nombreError by remember { mutableStateOf(false) }
+    var apellidoError by remember { mutableStateOf(false) }
+    var direccionError by remember { mutableStateOf(false) }
+    var telefonoError by remember { mutableStateOf(false) }
+    var emailError by remember { mutableStateOf(false) }
+    var passwordError by remember { mutableStateOf(false) }
+    var confirmPasswordError by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -102,9 +110,13 @@ fun RegisterScreen(
 
             OutlinedTextField(
                 value = nombre,
-                onValueChange = { nombre = it },
+                onValueChange = {
+                    nombre = it
+                    if (it.isNotBlank()) nombreError = false
+                },
                 label = { Text("Nombre") },
                 singleLine = true,
+                isError = nombreError,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     textColor = Color.Black,
                     focusedBorderColor = Color.Black,
@@ -115,12 +127,19 @@ fun RegisterScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(32.dp)
             )
+            if (nombreError) {
+                Text("Debe completar el campo", color = Color.Red, fontSize = 12.sp)
+            }
 
             OutlinedTextField(
                 value = apellido,
-                onValueChange = { apellido = it },
+                onValueChange = {
+                    apellido = it
+                    if (it.isNotBlank()) apellidoError = false
+                },
                 label = { Text("Apellido") },
                 singleLine = true,
+                isError = apellidoError,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     textColor = Color.Black,
                     focusedBorderColor = Color.Black,
@@ -131,12 +150,19 @@ fun RegisterScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(32.dp)
             )
+            if (apellidoError) {
+                Text("Debe completar el campo", color = Color.Red, fontSize = 12.sp)
+            }
 
             OutlinedTextField(
                 value = direccion,
-                onValueChange = { direccion = it },
+                onValueChange = {
+                    direccion = it
+                    if (it.isNotBlank()) direccionError = false
+                },
                 label = { Text("Direccion") },
                 singleLine = true,
+                isError = direccionError,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     textColor = Color.Black,
                     focusedBorderColor = Color.Black,
@@ -147,12 +173,19 @@ fun RegisterScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(32.dp)
             )
+            if (direccionError) {
+                Text("Debe completar el campo", color = Color.Red, fontSize = 12.sp)
+            }
 
             OutlinedTextField(
                 value = telefono,
-                onValueChange = { telefono = it },
+                onValueChange = {
+                    telefono = it
+                    if (it.isNotBlank()) telefonoError = false
+                },
                 label = { Text("Telefono") },
                 singleLine = true,
+                isError = telefonoError,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     textColor = Color.Black,
                     focusedBorderColor = Color.Black,
@@ -164,12 +197,19 @@ fun RegisterScreen(
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
                 shape = RoundedCornerShape(32.dp)
             )
+            if (telefonoError) {
+                Text("Debe completar el campo", color = Color.Red, fontSize = 12.sp)
+            }
 
             OutlinedTextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = {
+                    email = it
+                    if (it.isNotBlank()) emailError = false
+                },
                 label = { Text("Email") },
                 singleLine = true,
+                isError = emailError,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     textColor = Color.Black,
                     focusedBorderColor = Color.Black,
@@ -181,12 +221,19 @@ fun RegisterScreen(
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
                 shape = RoundedCornerShape(32.dp)
             )
+            if (emailError) {
+                Text("Debe completar el campo", color = Color.Red, fontSize = 12.sp)
+            }
 
             OutlinedTextField(
                 value = password,
-                onValueChange = { password = it },
+                onValueChange = {
+                    password = it
+                    if (it.isNotBlank()) passwordError = false
+                },
                 label = { Text("Contrasena") },
                 singleLine = true,
+                isError = passwordError,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     textColor = Color.Black,
                     focusedBorderColor = Color.Black,
@@ -197,12 +244,19 @@ fun RegisterScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(32.dp)
             )
+            if (passwordError) {
+                Text("Debe completar el campo", color = Color.Red, fontSize = 12.sp)
+            }
 
             OutlinedTextField(
                 value = confirmPassword,
-                onValueChange = { confirmPassword = it },
+                onValueChange = {
+                    confirmPassword = it
+                    if (it == password) confirmPasswordError = false
+                },
                 label = { Text("Confirmar Contrasena") },
                 singleLine = true,
+                isError = confirmPasswordError,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     textColor = Color.Black,
                     focusedBorderColor = Color.Black,
@@ -213,6 +267,9 @@ fun RegisterScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(32.dp)
             )
+            if (confirmPasswordError) {
+                Text("Debe completar el campo correctamente", color = Color.Red, fontSize = 12.sp)
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -236,18 +293,25 @@ fun RegisterScreen(
 
             Button(
                 onClick = {
-                    if (
-                        nombre.isBlank() || apellido.isBlank() || direccion.isBlank() ||
-                        telefono.isBlank() || email.isBlank() || password.isBlank() ||
-                        confirmPassword.isBlank() || password != confirmPassword
-                    ) {
+                    nombreError = nombre.isBlank()
+                    apellidoError = apellido.isBlank()
+                    direccionError = direccion.isBlank()
+                    telefonoError = telefono.isBlank()
+                    emailError = email.isBlank()
+                    passwordError = password.isBlank()
+                    confirmPasswordError = confirmPassword.isBlank() || confirmPassword != password
+
+                    val hayError = nombreError || apellidoError || direccionError || telefonoError ||
+                            emailError || passwordError || confirmPasswordError
+
+                    if (hayError) {
                         Toast.makeText(context, "Todos los Campos son obligatorios.", Toast.LENGTH_LONG).show()
                     } else {
                         onRegisterClick(nombre, apellido, direccion, telefono, email, password, rol)
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(50.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black),
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF4CAF50)),
                 shape = RoundedCornerShape(32.dp)
             ) {
                 Text("Registrar", color = Color.White)
@@ -264,4 +328,3 @@ fun RegisterScreen(
         }
     }
 }
-
