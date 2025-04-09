@@ -29,7 +29,7 @@ class PerfilViewModel : ViewModel() {
                 }
                 val usuario = snapshot?.toObject(Usuario::class.java)
                 _userData.value = usuario
-                println("DATOS DE USUARIO: $usuario") // ✅ ya no debería ser null
+                println("DATOS DE USUARIO: $usuario")
             }
     }
 

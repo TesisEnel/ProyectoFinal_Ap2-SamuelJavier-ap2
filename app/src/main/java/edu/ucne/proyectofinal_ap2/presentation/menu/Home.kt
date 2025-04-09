@@ -1,5 +1,7 @@
 package edu.ucne.proyectofinal_ap2.presentation.menu
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -10,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.layout.*
+import androidx.compose.ui.platform.LocalContext
 import edu.ucne.proyectofinal_ap2.data.entities.Material
 import edu.ucne.proyectofinal_ap2.presentation.admin.AdminMenuScreen
 import edu.ucne.proyectofinal_ap2.presentation.clientes.ClienteMenuScreen
@@ -17,8 +20,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
-    userName: String = "Usuario",
-    isAdmin: Boolean = false,
+    userName: String,
+    isAdmin: Boolean,
     onVerPedidos: () -> Unit,
     onCrearPedido: () -> Unit,
     onPerfilClick: () -> Unit,
@@ -32,11 +35,12 @@ fun HomeScreen(
     onCatalogo: () -> Unit,
     onVerUsuariosClick: () -> Unit,
     onCerrarSesion: () -> Unit,
-    onCuentaBanco: () -> Unit
+    onCuentaBanco: () -> Unit,
+    onCarrito: () -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
+    val activity = LocalContext.current as? Activity
     ModalDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -78,16 +82,11 @@ fun HomeScreen(
             }
         }
     ) {
-        Scaffold(
-
-        ) { padding ->
-            Column(
+        Scaffold { innerPadding ->
+            Box(
                 modifier = Modifier
-                    .padding(padding)
                     .fillMaxSize()
-                    .padding(8.dp),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(innerPadding)
             ) {
                 if (isAdmin) {
                     AdminMenuScreen(
@@ -106,10 +105,13 @@ fun HomeScreen(
                         onCatalogo = onCatalogo,
                         onCerrarSesion = onCerrarSesion,
                         onPerfilClick = onPerfilClick,
-                        onCuentaBanco = onCuentaBanco
+                        onCuentaBanco = onCuentaBanco,
+                        onCarrito = onCarrito
                     )
                 }
             }
         }
     }
+    BackHandler { activity?.finish() }
 }
+

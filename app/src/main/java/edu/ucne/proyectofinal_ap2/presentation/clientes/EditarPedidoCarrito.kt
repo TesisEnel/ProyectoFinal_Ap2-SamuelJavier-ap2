@@ -1,13 +1,9 @@
-package edu.ucne.proyectofinal_ap2.presentation.pedidos
-
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,7 +12,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,8 +23,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
@@ -37,28 +30,60 @@ import com.google.firebase.ktx.Firebase
 import edu.ucne.proyectofinal_ap2.data.entities.Material
 import edu.ucne.proyectofinal_ap2.data.entities.Pedido
 import edu.ucne.proyectofinal_ap2.presentation.menu.MaterialViewModel
-import edu.ucne.proyectofinal_ap2.presentation.navigation.Screen
 import edu.ucne.proyectofinal_ap2.presentation.viewModels.PedidoViewModel
-import java.util.*
 
 @Composable
-fun CrearPedidoScreen(
-    navHostController: NavHostController,
-    materialViewModel: MaterialViewModel = hiltViewModel(),
-    pedidoViewModel: PedidoViewModel = hiltViewModel()
+fun EditarPedidoCarritoScreen(
+    pedidoId: String,
+    materialViewModel: MaterialViewModel,
+    pedidoViewModel: PedidoViewModel,
+    onBack: () -> Unit,
+    onPedidoEditado: () -> Unit
 ) {
     val context = LocalContext.current
     val materiales = materialViewModel.materiales
+    var pedido by remember { mutableStateOf<Pedido?>(null) }
+
+    LaunchedEffect(pedidoId) {
+        Firebase.firestore.collection("pedidos").document(pedidoId).get()
+            .addOnSuccessListener { doc ->
+                pedido = Pedido(
+                    id = doc.id,
+                    material = doc.getString("material") ?: "",
+                    medida = doc.getString("medida") ?: "",
+                    alto = doc.getString("alto") ?: "",
+                    ancho = doc.getString("ancho") ?: "",
+                    logoUrl = doc.getString("logoUrl") ?: "",
+                    precio = doc.getDouble("precio") ?: 0.0,
+                    cantidad = doc.getLong("cantidad")?.toInt() ?: 1,
+                    estado = doc.getString("estado") ?: "carrito",
+                    fecha = doc.getLong("fecha"),
+                    nombre = doc.getString("nombre") ?: "",
+                    apellido = doc.getString("apellido") ?: "",
+                    telefono = doc.getString("telefono") ?: "",
+                    direccion = doc.getString("direccion") ?: "",
+                    mensaje = doc.getString("mensaje") ?: ""
+                )
+            }
+            .addOnFailureListener {
+                Toast.makeText(context, "Error al cargar pedido", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    if (pedido == null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
 
     var materialSeleccionado by remember { mutableStateOf<Material?>(null) }
-    var medidaSeleccionada by remember { mutableStateOf("") }
-    var alto by remember { mutableStateOf("") }
-    var ancho by remember { mutableStateOf("") }
-    var precio by remember { mutableStateOf(0.0) }
-    var cantidadTexto by remember { mutableStateOf("") }
-    var imagenUri by remember { mutableStateOf<Uri?>(null) }
-    var nombrePedido by remember { mutableStateOf("") }
-    var descripcion by remember { mutableStateOf("") }
+    var medidaSeleccionada by remember { mutableStateOf(pedido!!.medida) }
+    var alto by remember { mutableStateOf(pedido!!.alto) }
+    var ancho by remember { mutableStateOf(pedido!!.ancho) }
+    var precio by remember { mutableStateOf(pedido!!.precio) }
+    var cantidadTexto by remember { mutableStateOf(pedido!!.cantidad.toString()) }
+    var imagenUri by remember { mutableStateOf<Uri?>(Uri.parse(pedido!!.logoUrl)) }
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
         imagenUri = it
@@ -80,11 +105,16 @@ fun CrearPedidoScreen(
                     .background(Color.Black),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = { navHostController.popBackStack() }) {
+                IconButton(onClick = onBack) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás", tint = Color.White)
                 }
                 Spacer(modifier = Modifier.width(90.dp))
-                Text("Crear Pedido", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Medium)
+                Text(
+                    text = "Editar Pedido",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
+                )
             }
 
             Column(
@@ -98,12 +128,10 @@ fun CrearPedidoScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text("Selecciona un material", fontWeight = FontWeight.Bold)
-
                 var expanded by remember { mutableStateOf(false) }
-
                 Box(modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
-                        value = materialSeleccionado?.nombre ?: "",
+                        value = materialSeleccionado?.nombre ?: pedido!!.material,
                         onValueChange = {},
                         label = { Text("Material") },
                         readOnly = true,
@@ -138,34 +166,9 @@ fun CrearPedidoScreen(
                 }
 
                 Spacer(Modifier.height(16.dp))
-
-                OutlinedTextField(
-                    value = nombrePedido,
-                    onValueChange = { nombrePedido = it },
-                    label = { Text("Nombre del pedido") },
-                    colors = textFieldColors(),
-                    shape = RoundedCornerShape(32.dp),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(Modifier.height(16.dp))
-
-                OutlinedTextField(
-                    value = descripcion,
-                    onValueChange = { descripcion = it },
-                    label = { Text("Descripción") },
-                    colors = textFieldColors(),
-                    shape = RoundedCornerShape(32.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp)
-                )
-                Spacer(Modifier.height(16.dp))
-
                 Text("Selecciona el tamaño", fontWeight = FontWeight.Bold)
 
                 val opciones = listOf("Pequeño", "Mediano", "Grande", "Personalizado")
-
                 opciones.forEach { medida ->
                     val (medAlto, medAncho) = medidasConDescripcion[medida] ?: Pair("", "")
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -179,7 +182,7 @@ fun CrearPedidoScreen(
                                 }
                                 precio = pedidoViewModel.calcularPrecioPedido(
                                     medida, alto, ancho,
-                                    materialSeleccionado?.nombre ?: "",
+                                    materialSeleccionado?.nombre ?: pedido!!.material,
                                     cantidadTexto.toIntOrNull() ?: 1
                                 )
                             }
@@ -200,7 +203,7 @@ fun CrearPedidoScreen(
                                 alto = it
                                 precio = pedidoViewModel.calcularPrecioPedido(
                                     medidaSeleccionada, alto, ancho,
-                                    materialSeleccionado?.nombre ?: "",
+                                    materialSeleccionado?.nombre ?: pedido!!.material,
                                     cantidadTexto.toIntOrNull() ?: 1
                                 )
                             },
@@ -219,7 +222,7 @@ fun CrearPedidoScreen(
                                 ancho = it
                                 precio = pedidoViewModel.calcularPrecioPedido(
                                     medidaSeleccionada, alto, ancho,
-                                    materialSeleccionado?.nombre ?: "",
+                                    materialSeleccionado?.nombre ?: pedido!!.material,
                                     cantidadTexto.toIntOrNull() ?: 1
                                 )
                             },
@@ -240,7 +243,7 @@ fun CrearPedidoScreen(
                             cantidadTexto = it
                             precio = pedidoViewModel.calcularPrecioPedido(
                                 medidaSeleccionada, alto, ancho,
-                                materialSeleccionado?.nombre ?: "",
+                                materialSeleccionado?.nombre ?: pedido!!.material,
                                 cantidadTexto.toIntOrNull() ?: 1
                             )
                         }
@@ -253,15 +256,13 @@ fun CrearPedidoScreen(
                 )
 
                 Spacer(Modifier.height(16.dp))
-
-                Spacer(Modifier.height(16.dp))
                 Text("Sube un logo o imagen", fontWeight = FontWeight.Bold)
-                Button(onClick = { launcher.launch("image/*") },
+                Button(
+                    onClick = { launcher.launch("image/*") },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color.Blue,
-                        contentColor = Color.White),
-                    shape = RoundedCornerShape(32.dp)) {
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue, contentColor = Color.White),
+                    shape = RoundedCornerShape(32.dp)
+                ) {
                     Text("Seleccionar imagen")
                 }
 
@@ -282,94 +283,40 @@ fun CrearPedidoScreen(
                 Spacer(Modifier.height(24.dp))
                 Button(
                     onClick = {
-                        val cantidadFinal = if (cantidadTexto.isBlank()) 1 else cantidadTexto.toInt()
+                        val cantidadFinal = cantidadTexto.toIntOrNull() ?: 1
                         val userId = FirebaseAuth.getInstance().currentUser?.uid
 
-                        if (userId != null && materialSeleccionado != null && medidaSeleccionada.isNotEmpty()
-                            && alto.isNotEmpty() && ancho.isNotEmpty()
-                        ) {
-                            val pedido = Pedido(
-                                id = UUID.randomUUID().toString(),
-                                material = materialSeleccionado!!.nombre,
+                        if (userId != null && medidaSeleccionada.isNotEmpty() && alto.isNotEmpty() && ancho.isNotEmpty()) {
+                            val pedidoEditado = pedido!!.copy(
+                                material = materialSeleccionado?.nombre ?: pedido!!.material,
                                 medida = medidaSeleccionada,
                                 alto = alto,
                                 ancho = ancho,
-                                logoUrl = imagenUri?.toString() ?: "",
+                                logoUrl = imagenUri?.toString() ?: pedido!!.logoUrl,
                                 precio = precio,
                                 cantidad = cantidadFinal,
-                                estado = "pendiente",
-                                fecha = System.currentTimeMillis(),
-                                nombre = "Nombre del usuario",
-                                apellido = "Apellido del usuario",
-                                telefono = "Número de teléfono",
-                                direccion = "Dirección del usuario",
-                                nombrePedido = nombrePedido,
-                                descripcion = descripcion
+                                fecha = System.currentTimeMillis()
                             )
-                            Log.d("PEDIDO DEBUG", "Nombre: $nombrePedido - Descripción: $descripcion")
-                            pedidoViewModel.guardarPedido(
-                                pedido,
-                                onSuccess = {
-                                    Toast.makeText(context, "Pedido guardado con éxito", Toast.LENGTH_SHORT).show()
-                                    navHostController.navigate(Screen.PagoInstruccionScreen.route)
-                                },
-                                onError = {
-                                    Toast.makeText(context, "Error al guardar", Toast.LENGTH_SHORT).show()
-                                }
-                            )
-                            Log.d("guardarPedido", "Guardando nombrePedido: ${pedido.nombrePedido} y descripcion: ${pedido.descripcion}")
 
+                            Firebase.firestore.collection("pedidos").document(pedido!!.id)
+                                .set(pedidoEditado)
+                                .addOnSuccessListener {
+                                    Toast.makeText(context, "Pedido actualizado", Toast.LENGTH_SHORT).show()
+                                    onPedidoEditado()
+                                }
+                                .addOnFailureListener {
+                                    Toast.makeText(context, "Error al actualizar", Toast.LENGTH_SHORT).show()
+                                }
                         } else {
-                            Toast.makeText(context, "Por favor completa todos los campos requeridos.", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Completa todos los campos", Toast.LENGTH_SHORT).show()
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black),
-                    shape = RoundedCornerShape(32.dp),
-                    enabled = materialSeleccionado != null && cantidadTexto.isNotEmpty() && alto.isNotEmpty() && ancho.isNotEmpty()
-                ) {
-                    Text("Confirmar pedido", color = Color(0xFF4CAF50))
-                }
-
-                Button(
-                    onClick = {
-                        val cantidadFinal = if (cantidadTexto.isBlank()) 1 else cantidadTexto.toInt()
-                        val pedido = Pedido(
-                            id = UUID.randomUUID().toString(),
-                            material = materialSeleccionado!!.nombre,
-                            medida = medidaSeleccionada,
-                            alto = alto,
-                            ancho = ancho,
-                            logoUrl = imagenUri?.toString() ?: "",
-                            precio = precio,
-                            cantidad = cantidadFinal,
-                            estado = "carrito",
-                            fecha = System.currentTimeMillis(),
-                            nombre = "Nombre",
-                            apellido = "Apellido",
-                            telefono = "Teléfono",
-                            direccion = "Dirección",
-                            nombrePedido = nombrePedido,
-                            descripcion = descripcion
-                        )
-
-                        pedidoViewModel.agregarAlCarrito(
-                            pedido,
-                            onSuccess = {
-                                Toast.makeText(context, "Agregado al carrito", Toast.LENGTH_SHORT).show()
-                            },
-                            onError = {
-                                Toast.makeText(context, "Error: $it", Toast.LENGTH_SHORT).show()
-                            }
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Gray),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black, contentColor = Color.White),
                     shape = RoundedCornerShape(32.dp)
                 ) {
-                    Text("Agregar al carrito", color = Color.White)
+                    Text("Guardar cambios")
                 }
-
             }
         }
     }

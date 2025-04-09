@@ -1,11 +1,19 @@
 package edu.ucne.proyectofinal_ap2.presentation.navigation
+import EditarPedidoCarritoScreen
+import android.annotation.SuppressLint
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 
 import android.widget.Toast
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -14,6 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.google.firebase.auth.FirebaseAuth
+import edu.ucne.proyectofinal_ap2.data.entities.Pedido
 import edu.ucne.proyectofinal_ap2.presentation.viewModels.AuthViewModel
 import edu.ucne.proyectofinal_ap2.presentation.login.LoginScreen
 import edu.ucne.proyectofinal_ap2.presentation.login.RegisterScreen
@@ -25,6 +34,7 @@ import edu.ucne.proyectofinal_ap2.presentation.admin.ListaPedidosAdminScreen
 import edu.ucne.proyectofinal_ap2.presentation.clientes.ClienteMenuScreen
 import edu.ucne.proyectofinal_ap2.presentation.admin.AdminMenuScreen
 import edu.ucne.proyectofinal_ap2.presentation.admin.ListaUsuariosScreen
+import edu.ucne.proyectofinal_ap2.presentation.clientes.CarritoScreen
 import edu.ucne.proyectofinal_ap2.presentation.clientes.CuentaBancoScreen
 import edu.ucne.proyectofinal_ap2.presentation.menu.AgregarLetreroScreen
 import edu.ucne.proyectofinal_ap2.presentation.menu.AgregarMaterialScreen
@@ -48,6 +58,7 @@ import edu.ucne.proyectofinal_ap2.presentation.viewModels.PedidoViewModel
 import edu.ucne.proyectofinal_ap2.presentation.viewModels.UsuarioViewModel
 
 
+@SuppressLint("UnrememberedGetBackStackEntry")
 @Composable
 fun AppNavHost(navHostController: NavHostController) {
     val context = LocalContext.current
@@ -115,7 +126,8 @@ fun AppNavHost(navHostController: NavHostController) {
                 onHacerPedidos =  { navHostController.navigate(Screen.CrearPedidoScreen.route)},
                 onCatalogo = { navHostController.navigate(Screen.HomeClienteCatalogoScreen.route)},
                 onVerUsuariosClick = { navHostController.navigate(Screen.ListaUsuariosScreen.route)},
-                onCuentaBanco = { navHostController.navigate(Screen.CuentaBancoScreen.route)}
+                onCuentaBanco = { navHostController.navigate(Screen.CuentaBancoScreen.route)},
+                onCarrito = {navHostController.navigate(Screen.CarritoScreen.route)}
             )
         }
 
@@ -143,7 +155,8 @@ fun AppNavHost(navHostController: NavHostController) {
                 },
                 onGoToLogin = {
                     navHostController.popBackStack()
-                }
+                },
+                onBack = {navHostController.popBackStack()}
             )
         }
 
@@ -173,12 +186,12 @@ fun AppNavHost(navHostController: NavHostController) {
 
         composable(Screen.EditarLetreroScreen.route) {
             EditarLetreroScreen(
-      navController= navHostController
+                navController= navHostController
             )
         }
         composable(Screen.EliminarLetreroScreen.route) {
             EliminarLetreroScreen(
-navController = navHostController
+                navController = navHostController
             )
         }
 
@@ -228,18 +241,30 @@ navController = navHostController
                 },
                 onMaterialClick = { material ->
                     navHostController.navigate(
-                       Screen.DetalleMaterialScreen.createRoute(
-                           nombre = material.nombre,
-                           descripcion = material.descripcion,
-                           imagenUrl = material.imagenUrl,
-                           precioCm2 = material.precioCm2
-                       )
+                        Screen.DetalleMaterialScreen.createRoute(
+                            nombre = material.nombre,
+                            descripcion = material.descripcion,
+                            imagenUrl = material.imagenUrl,
+                            precioCm2 = material.precioCm2
+                        )
 
                     )
                 },
                 letreroViewModel = letreroViewModel,
                 materialViewModel = materialViewModel,
-                navController = navHostController
+                navController = navHostController,
+                onCarrito = { navHostController.navigate(Screen.CarritoScreen.route)},
+                onCatalogo = { navHostController.navigate(Screen.HomeClienteCatalogoScreen.route)},
+                onPerfil = { navHostController.navigate(Screen.PerfilScreen.route)},
+                onMisPedidos = { navHostController.navigate(Screen.MisPedidosScreen.route)},
+                onCuentaBanco = { navHostController.navigate(Screen.CuentaBancoScreen.route)},
+                onHacerPedido = { navHostController.navigate(Screen.CrearPedidoScreen.route)},
+                onPerfilClick = { navHostController.navigate(Screen.PerfilScreen.route)},
+                onCerrarSesion = {  FirebaseAuth.getInstance().signOut()
+                    Toast.makeText(context, "Sesión cerrada con éxito", Toast.LENGTH_SHORT).show()
+                    navHostController.navigate("LoginScreen") {
+                        popUpTo("admin") { inclusive = true }
+                    }}
             )
         }
 
@@ -260,9 +285,19 @@ navController = navHostController
             )
         }
 
+        composable(Screen.CarritoScreen.route) {
+            val pedidoViewModel: PedidoViewModel = hiltViewModel()
+            CarritoScreen(
+                navController = navHostController,
+                pedidoViewModel= pedidoViewModel
+
+
+            )
+        }
+
         composable(Screen.EditarMaterialesScreen.route) {
             EditarMaterialScreen(
-                  navController = navHostController
+                navController = navHostController
             )
         }
 
@@ -321,7 +356,7 @@ navController = navHostController
 
         composable(Screen.PersonalizarPedidoScreen.route) {
             PersonalizarPedidoScreen(
-            letreroId = 1,
+                letreroId = 1,
                 onPedidoConfirmado = {navHostController.popBackStack()}
             )
         }
@@ -337,6 +372,20 @@ navController = navHostController
 
             )
         }
+        composable("editar_pedido_carrito/{pedidoId}") { backStackEntry ->
+            val pedidoId = backStackEntry.arguments?.getString("pedidoId") ?: return@composable
+            val materialViewModel: MaterialViewModel = hiltViewModel()
+            val pedidoViewModel: PedidoViewModel = hiltViewModel()
+
+            EditarPedidoCarritoScreen(
+                pedidoId = pedidoId,
+                materialViewModel = materialViewModel,
+                pedidoViewModel = pedidoViewModel,
+                onBack = { navHostController.popBackStack() },
+                onPedidoEditado = { navHostController.popBackStack() }
+            )
+        }
+
 
         composable(Screen.PagoInstruccionScreen.route) {
             PagoInstruccionScreen(navController = navHostController)
@@ -387,7 +436,8 @@ navController = navHostController
                     }
                 },
                 onPerfilClick = { navHostController.navigate(Screen.PerfilScreen.route)},
-                onCuentaBanco = {navHostController.navigate(Screen.CuentaBancoScreen.route)}
+                onCuentaBanco = {navHostController.navigate(Screen.CuentaBancoScreen.route)},
+                onCarrito = {navHostController.navigate(Screen.CarritoScreen.route)}
             )
         }
 

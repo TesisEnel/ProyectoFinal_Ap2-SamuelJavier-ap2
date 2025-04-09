@@ -12,6 +12,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.google.firebase.firestore.DocumentSnapshot
 
@@ -36,11 +37,13 @@ fun EditarLetreroScreen(
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text("Editar Letrero") },
+            contentColor = Color.White,
             navigationIcon = {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(Icons.Default.ArrowBack, contentDescription = "Atrás")
                 }
-            }
+            },
+            backgroundColor = Color.Black
         )
 
         Column(modifier = Modifier.padding(16.dp)) {
@@ -107,7 +110,8 @@ fun EditarLetreroScreen(
                         .addOnFailureListener {
                             Toast.makeText(context, "Error al actualizar", Toast.LENGTH_SHORT).show()
                         }
-                }) {
+                },
+                    colors = ButtonDefaults.buttonColors(Color(0xFF4CAF50))) {
                     Text("Guardar")
                 }
             },
@@ -115,7 +119,8 @@ fun EditarLetreroScreen(
                 OutlinedButton(onClick = {
                     mostrarDialogo = false
                     selectedLetrero = null
-                }) {
+                },
+                    colors = ButtonDefaults.buttonColors(Color.Red)) {
                     Text("Cancelar")
                 }
             }

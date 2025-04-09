@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -38,11 +39,13 @@ fun EliminarMaterialScreen(navController: NavHostController) {
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text("Eliminar Materiales") },
+            contentColor = Color.White,
             navigationIcon = {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(Icons.Default.ArrowBack, contentDescription = "Atrás")
                 }
-            }
+            },
+            backgroundColor = Color.Black
         )
 
         Column(modifier = Modifier
@@ -88,13 +91,15 @@ fun EliminarMaterialScreen(navController: NavHostController) {
                                     showDialog = false
                                 }
                         }
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(Color.Red)
                 ) {
                     Text("Eliminar")
                 }
             },
             dismissButton = {
-                Button(onClick = { showDialog = false }) {
+                Button(onClick = { showDialog = false },
+                    colors = ButtonDefaults.buttonColors(Color.Blue)) {
                     Text("Cancelar")
                 }
             }

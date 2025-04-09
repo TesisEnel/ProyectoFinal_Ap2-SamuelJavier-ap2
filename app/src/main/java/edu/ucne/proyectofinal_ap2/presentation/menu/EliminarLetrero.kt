@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -19,6 +20,7 @@ import com.google.firebase.ktx.Firebase
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 
 @Composable
@@ -40,11 +42,13 @@ fun EliminarLetreroScreen(navController: NavController) {
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text("Eliminar Letrero") },
+            contentColor = Color.White,
             navigationIcon = {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(Icons.Default.ArrowBack, contentDescription = "Atrás")
                 }
-            }
+            },
+            backgroundColor = Color.Black
         )
 
         Column(modifier = Modifier.padding(16.dp)) {
@@ -86,13 +90,15 @@ fun EliminarLetreroScreen(navController: NavController) {
                                     Toast.makeText(context, "Error al eliminar", Toast.LENGTH_SHORT).show()
                                 }
                         }
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(Color.Red)
                 ) {
                     Text("Eliminar")
                 }
             },
             dismissButton = {
-                Button(onClick = { showDialog = false }) {
+                Button(onClick = { showDialog = false },
+                    colors = ButtonDefaults.buttonColors(Color.Blue)) {
                     Text("Cancelar")
                 }
             }

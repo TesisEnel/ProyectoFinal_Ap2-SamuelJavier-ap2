@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.navigation.NavHostController
 
@@ -26,7 +27,6 @@ fun EditarMaterialScreen(navController: NavHostController) {
     var materialSeleccionado by remember { mutableStateOf<DocumentSnapshot?>(null) }
     var mostrarDialogo by remember { mutableStateOf(false) }
 
-    // Campos de edición
     var nombreNuevo by remember { mutableStateOf("") }
     var descripcionNueva by remember { mutableStateOf("") }
     var precioNuevo by remember { mutableStateOf("") }
@@ -42,11 +42,13 @@ fun EditarMaterialScreen(navController: NavHostController) {
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text("Editar Materiales") },
+            contentColor = Color.White,
             navigationIcon = {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
                 }
-            }
+            },
+            backgroundColor = Color.Black
         )
 
         Column(
@@ -135,7 +137,8 @@ fun EditarMaterialScreen(navController: NavHostController) {
                     } else {
                         Toast.makeText(context, "Precio inválido", Toast.LENGTH_SHORT).show()
                     }
-                }) {
+                },
+                    colors = ButtonDefaults.buttonColors(Color(0xFF4CAF50))) {
                     Text("Guardar")
                 }
             },
@@ -143,7 +146,8 @@ fun EditarMaterialScreen(navController: NavHostController) {
                 OutlinedButton(onClick = {
                     mostrarDialogo = false
                     materialSeleccionado = null
-                }) {
+                },
+                    colors = ButtonDefaults.buttonColors(Color.Red)) {
                     Text("Cancelar")
                 }
             }
