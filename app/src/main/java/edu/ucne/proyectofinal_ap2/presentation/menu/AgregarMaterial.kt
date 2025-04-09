@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -13,6 +14,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -39,11 +41,13 @@ fun AgregarMaterialScreen(
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text("Agregar Material") },
+            contentColor = Color.White,
             navigationIcon = {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
                 }
-            }
+            },
+            backgroundColor = Color.Black
         )
 
         Column(
@@ -82,7 +86,13 @@ fun AgregarMaterialScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Button(onClick = { launcher.launch("image/*") }) {
+            Button(onClick = { launcher.launch("image/*") },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color.Black,
+                    contentColor = Color.White),
+                shape = RoundedCornerShape(32.dp)
+            ) {
                 Text("Seleccionar imagen")
             }
 
@@ -119,7 +129,12 @@ fun AgregarMaterialScreen(
                         )
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color(0xFF4CAF50),
+                    contentColor = Color.White),
+                shape = RoundedCornerShape(32.dp)
+
             ) {
                 Text("Guardar material")
             }
